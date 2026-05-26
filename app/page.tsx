@@ -91,8 +91,8 @@ export default function Home() {
       answer: "Standard resolution times depend on ticket severity: Critical issues (such as POS terminal downtime) are addressed within 1 hour; High-severity issues within 4 hours; and general inquiries within 24 hours."
     },
     {
-      question: "Who can access standard operating procedures (SOPs)?",
-      answer: "All authorized staff, trainers, managers, and system administrators can browse and download SOP documentation directly from the portal’s shared knowledge base."
+      question: "Who can view my support tickets?",
+      answer: "Only you, your HOD, and assigned technicians can view the details and progress of your support tickets to ensure privacy and security."
     },
     {
       question: "How do I update my profile details?",
@@ -150,7 +150,7 @@ export default function Home() {
               <span className="text-primaryBlue">For Operations & Staff</span>
             </h1>
             <p className="text-base md:text-lg text-gray-600 text-textRegular leading-relaxed mb-8">
-              Welcome to the central helpdesk and SOP repository. Seamlessly track incidents, check resolution statuses, and access official standard operating procedures for all Tamarind entities.
+              Welcome to the central support desk. Seamlessly report incident logs, check resolution statuses, and coordinate with technicians for all Tamarind Group operations.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
@@ -181,8 +181,8 @@ export default function Home() {
               </div>
               <div className="w-px h-8 bg-gray-200" />
               <div>
-                <span className="block text-2xl text-textBold text-gray-900">20+</span>
-                <span className="text-xs text-textRegular text-gray-500">Standard SOPs Ready</span>
+                <span className="block text-2xl text-textBold text-gray-900">100%</span>
+                <span className="text-xs text-textRegular text-gray-500">Secure Audit Trail</span>
               </div>
             </div>
           </div>
@@ -199,7 +199,7 @@ export default function Home() {
                   <div className="w-3 h-3 rounded-full bg-green-500" />
                   <span className="ml-2 text-xs text-textBold text-gray-400">helpdesk-v1.4.3</span>
                 </div>
-                <span className="text-xs text-gray-500 text-textRegular">SOP & Ticket Portal</span>
+                <span className="text-xs text-gray-500 text-textRegular">Support Console</span>
               </div>
 
               {/* Mockup Layout contents */}
@@ -277,9 +277,9 @@ export default function Home() {
               <div className="w-12 h-12 rounded-xl bg-primaryRed/10 text-primaryRed flex items-center justify-center mb-6 group-hover:bg-primaryRed group-hover:text-white transition-colors">
                 <BookOpen className="w-6 h-6" />
               </div>
-              <h3 className="text-base text-textBold text-gray-900 mb-2">SOP & Guidelines</h3>
+              <h3 className="text-base text-textBold text-gray-900 mb-2">Knowledge Base</h3>
               <p className="text-xs text-textRegular text-gray-500 leading-relaxed">
-                Instantly search and reference standard operating procedures to manage routine workflows.
+                Quickly browse troubleshooting manuals and documentation to resolve common technical issues.
               </p>
             </div>
 
@@ -445,7 +445,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="mt-auto border-t border-gray-100 py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
           
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded bg-primaryBlue flex items-center justify-center text-[10px] text-textBold text-white">T</div>
@@ -455,7 +455,7 @@ export default function Home() {
           <div className="flex items-center gap-6 text-xs text-textRegular text-gray-500">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              SOP Database Online
+              Support Server Online
             </span>
             <div className="w-px h-3 bg-gray-200" />
             <a href="#faq" className="hover:text-primaryBlue transition-colors">Privacy Policy</a>
