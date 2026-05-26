@@ -107,36 +107,25 @@ export default function Home() {
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
         <div className="mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {/* Custom Brand Logo */}
-            {/* <div className="w-9 h-9 rounded-lg bg-primaryBlue flex items-center justify-center relative overflow-hidden shadow-md"> */}
-              <Image src="/logo.png" alt="logo" width={35} height={35} />
-              {/* <span className="text-white font-bold text-lg select-none">T</span> */}
-              {/* <div className="absolute bottom-0 right-0 w-3 h-3 bg-primaryRed rounded-tl-full" /> */}
-            {/* </div> */}
+            <Image src="/logo2.png" alt="Tamarind Logo" width={50} height={50} className="object-contain" />
             <div>
-              <span className="font-bold text-lg text-primaryBlue tracking-tight block leading-none">TAMARIND</span>
-              <span className="text-[10px] tracking-wider text-gray-500 font-bold uppercase">Helpdesk System</span>
+              <span className="text-textBold text-lg text-primaryBlue tracking-tight block leading-none">TAMARIND</span>
+              <span className="text-[10px] tracking-wider text-gray-500 text-textBold uppercase">Helpdesk System</span>
             </div>
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm font-regular text-gray-600 hover:text-primaryBlue transition-colors">Features</a>
-            <a href="#tracking" className="text-sm font-regular text-gray-600 hover:text-primaryBlue transition-colors">Track Ticket</a>
-            <a href="#faq" className="text-sm font-regular text-gray-600 hover:text-primaryBlue transition-colors">Support FAQ</a>
+            <a href="#features" className="text-sm text-textRegular text-gray-600 hover:text-primaryBlue transition-colors">Features</a>
+            <a href="#tracking" className="text-sm text-textRegular text-gray-600 hover:text-primaryBlue transition-colors">Track Ticket</a>
+            <a href="#faq" className="text-sm text-textRegular text-gray-600 hover:text-primaryBlue transition-colors">Support FAQ</a>
           </nav>
 
           <div className="flex items-center gap-4">
             <Link 
               href="/login" 
-              className="text-sm font-bold text-primaryBlue hover:text-primaryRed transition-colors"
+              className="text-sm text-textBold text-primaryBlue hover:text-primaryRed transition-colors"
             >
               Sign In
-            </Link>
-            <Link 
-              href="/login" 
-              className="bg-primaryBlue hover:bg-primaryBlue/90 text-white font-bold text-sm px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow-md active:scale-95"
-            >
-              Support Portal
             </Link>
           </div>
         </div>
@@ -148,33 +137,33 @@ export default function Home() {
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-96 h-96 bg-primaryBlue/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-96 h-96 bg-primaryRed/5 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           {/* Left Column: Copy */}
           <div className="lg:col-span-6 flex flex-col items-start">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-primaryRed/10 text-primaryRed mb-6">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs text-textBold bg-primaryRed/10 text-primaryRed mb-6">
               <Activity className="w-3.5 h-3.5" />
               Tamarind Group Service Hub
             </span>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 leading-tight mb-6">
+            <h1 className="text-4xl md:text-5xl text-textBold tracking-tight text-gray-900 leading-tight mb-6">
               Intelligent Support <br />
               <span className="text-primaryBlue">For Operations & Staff</span>
             </h1>
-            <p className="text-base md:text-lg text-gray-600 font-regular leading-relaxed mb-8">
+            <p className="text-base md:text-lg text-gray-600 text-textRegular leading-relaxed mb-8">
               Welcome to the central helpdesk and SOP repository. Seamlessly track incidents, check resolution statuses, and access official standard operating procedures for all Tamarind entities.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
               <Link 
                 href="/login"
-                className="bg-primaryBlue hover:bg-primaryBlue/95 text-white font-bold px-6 py-3.5 rounded-xl transition-all shadow-lg hover:shadow-primaryBlue/20 flex items-center justify-center gap-2 group active:scale-95"
+                className="bg-primaryBlue hover:bg-primaryBlue/95 text-white text-textBold px-6 py-3.5 rounded-xl transition-all shadow-lg hover:shadow-primaryBlue/20 flex items-center justify-center gap-2 group active:scale-95"
               >
                 Log In to Dashboard
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <a 
                 href="#tracking"
-                className="border border-gray-200 hover:border-primaryBlue/30 text-gray-700 hover:text-primaryBlue font-bold px-6 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"
+                className="border border-gray-200 hover:border-primaryBlue/30 text-gray-700 hover:text-primaryBlue text-textBold px-6 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"
               >
                 Track Support Ticket
               </a>
@@ -182,18 +171,18 @@ export default function Home() {
 
             <div className="flex items-center gap-8 mt-12 pt-8 border-t border-gray-100 w-full">
               <div>
-                <span className="block text-2xl font-bold text-primaryBlue">99.4%</span>
-                <span className="text-xs font-regular text-gray-500">SLA Resolution</span>
+                <span className="block text-2xl text-textBold text-primaryBlue">99.4%</span>
+                <span className="text-xs text-textRegular text-gray-500">SLA Resolution</span>
               </div>
               <div className="w-px h-8 bg-gray-200" />
               <div>
-                <span className="block text-2xl font-bold text-primaryRed">10m</span>
-                <span className="text-xs font-regular text-gray-500">Avg Response Time</span>
+                <span className="block text-2xl text-textBold text-primaryRed">10m</span>
+                <span className="text-xs text-textRegular text-gray-500">Avg Response Time</span>
               </div>
               <div className="w-px h-8 bg-gray-200" />
               <div>
-                <span className="block text-2xl font-bold text-gray-900">20+</span>
-                <span className="text-xs font-regular text-gray-500">Standard SOPs Ready</span>
+                <span className="block text-2xl text-textBold text-gray-900">20+</span>
+                <span className="text-xs text-textRegular text-gray-500">Standard SOPs Ready</span>
               </div>
             </div>
           </div>
@@ -208,9 +197,9 @@ export default function Home() {
                   <div className="w-3 h-3 rounded-full bg-red-500" />
                   <div className="w-3 h-3 rounded-full bg-yellow-500" />
                   <div className="w-3 h-3 rounded-full bg-green-500" />
-                  <span className="ml-2 text-xs font-bold text-gray-400">helpdesk-v1.4.3</span>
+                  <span className="ml-2 text-xs text-textBold text-gray-400">helpdesk-v1.4.3</span>
                 </div>
-                <span className="text-xs text-gray-500 font-regular">SOP & Ticket Portal</span>
+                <span className="text-xs text-gray-500 text-textRegular">SOP & Ticket Portal</span>
               </div>
 
               {/* Mockup Layout contents */}
@@ -219,40 +208,40 @@ export default function Home() {
                 <div className="bg-primaryBlue/20 border border-primaryBlue/40 rounded-xl p-3 flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-primaryBlue animate-pulse" />
-                    <span className="text-xs text-gray-300 font-bold">System Status: Normal</span>
+                    <span className="text-xs text-gray-300 text-textBold">System Status: Normal</span>
                   </div>
-                  <span className="text-[10px] font-regular bg-primaryRed/20 text-primaryRed px-2.5 py-0.5 rounded-full font-bold">Technicians Online</span>
+                  <span className="text-[10px] text-textRegular bg-primaryRed/20 text-primaryRed px-2.5 py-0.5 rounded-full text-textBold">Technicians Online</span>
                 </div>
 
                 {/* Simulated list of tickets */}
-                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mt-4">Active Support Queue</span>
+                <span className="text-xs text-textBold text-gray-400 uppercase tracking-wider block mt-4">Active Support Queue</span>
                 
                 <div className="space-y-2.5">
                   <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5 flex justify-between items-start hover:border-gray-700 transition-colors">
                     <div>
-                      <span className="text-[10px] font-bold text-primaryRed uppercase tracking-wider block mb-1">POS Hardware</span>
-                      <h4 className="text-xs font-bold text-gray-200">POS Terminal #3 Offline</h4>
-                      <span className="text-[10px] font-regular text-gray-500">Raised by: Manager Room 3 • 45m ago</span>
+                      <span className="text-[10px] text-textBold text-primaryRed uppercase tracking-wider block mb-1">POS Hardware</span>
+                      <h4 className="text-xs text-textBold text-gray-200">POS Terminal #3 Offline</h4>
+                      <span className="text-[10px] text-textRegular text-gray-500">Raised by: Manager Room 3 • 45m ago</span>
                     </div>
-                    <span className="text-[10px] font-bold text-yellow-400 bg-yellow-400/10 px-2 py-0.5 rounded-md">In Progress</span>
+                    <span className="text-[10px] text-textBold text-yellow-400 bg-yellow-400/10 px-2 py-0.5 rounded-md">In Progress</span>
                   </div>
 
                   <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5 flex justify-between items-start hover:border-gray-700 transition-colors">
                     <div>
-                      <span className="text-[10px] font-bold text-primaryBlue uppercase tracking-wider block mb-1">Infrastructure</span>
-                      <h4 className="text-xs font-bold text-gray-200">Main Server Connection Timeout</h4>
-                      <span className="text-[10px] font-regular text-gray-500">Assigned: Sys Admin • 2h ago</span>
+                      <span className="text-[10px] text-textBold text-primaryBlue uppercase tracking-wider block mb-1">Infrastructure</span>
+                      <h4 className="text-xs text-textBold text-gray-200">Main Server Connection Timeout</h4>
+                      <span className="text-[10px] text-textRegular text-gray-500">Assigned: Sys Admin • 2h ago</span>
                     </div>
-                    <span className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-md">Resolved</span>
+                    <span className="text-[10px] text-textBold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-md">Resolved</span>
                   </div>
 
                   <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5 flex justify-between items-start hover:border-gray-700 transition-colors">
                     <div>
-                      <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider block mb-1">Software Licensing</span>
-                      <h4 className="text-xs font-bold text-gray-200">Marketing Tool License Access</h4>
-                      <span className="text-[10px] font-regular text-gray-500">Awaiting: HOD Approval • 5m ago</span>
+                      <span className="text-[10px] text-textBold text-purple-400 uppercase tracking-wider block mb-1">Software Licensing</span>
+                      <h4 className="text-xs text-textBold text-gray-200">Marketing Tool License Access</h4>
+                      <span className="text-[10px] text-textRegular text-gray-500">Awaiting: HOD Approval • 5m ago</span>
                     </div>
-                    <span className="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md">Awaiting HOD</span>
+                    <span className="text-[10px] text-textBold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md">Awaiting HOD</span>
                   </div>
                 </div>
               </div>
@@ -267,8 +256,8 @@ export default function Home() {
       <section id="features" className="py-20 bg-gray-50/50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="max-w-2xl mx-auto text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 tracking-tight mb-4">Core System Capabilities</h2>
-            <p className="text-base text-gray-500 font-regular">Built to provide quick support resolution and easily referenceable workflow directories.</p>
+            <h2 className="text-3xl text-textBold text-gray-900 tracking-tight mb-4">Core System Capabilities</h2>
+            <p className="text-base text-gray-500 text-textRegular">Built to provide quick support resolution and easily referenceable workflow directories.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -277,8 +266,8 @@ export default function Home() {
               <div className="w-12 h-12 rounded-xl bg-primaryBlue/10 text-primaryBlue flex items-center justify-center mb-6 group-hover:bg-primaryBlue group-hover:text-white transition-colors">
                 <LifeBuoy className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-gray-900 mb-2">Fast Ticket Desk</h3>
-              <p className="text-xs font-regular text-gray-500 leading-relaxed">
+              <h3 className="text-base text-textBold text-gray-900 mb-2">Fast Ticket Desk</h3>
+              <p className="text-xs text-textRegular text-gray-500 leading-relaxed">
                 Log and assign operational tasks directly to our technical support team in real-time.
               </p>
             </div>
@@ -288,8 +277,8 @@ export default function Home() {
               <div className="w-12 h-12 rounded-xl bg-primaryRed/10 text-primaryRed flex items-center justify-center mb-6 group-hover:bg-primaryRed group-hover:text-white transition-colors">
                 <BookOpen className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-gray-900 mb-2">SOP & Guidelines</h3>
-              <p className="text-xs font-regular text-gray-500 leading-relaxed">
+              <h3 className="text-base text-textBold text-gray-900 mb-2">SOP & Guidelines</h3>
+              <p className="text-xs text-textRegular text-gray-500 leading-relaxed">
                 Instantly search and reference standard operating procedures to manage routine workflows.
               </p>
             </div>
@@ -299,8 +288,8 @@ export default function Home() {
               <div className="w-12 h-12 rounded-xl bg-primaryBlue/10 text-primaryBlue flex items-center justify-center mb-6 group-hover:bg-primaryBlue group-hover:text-white transition-colors">
                 <Clock className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-gray-900 mb-2">SLA Management</h3>
-              <p className="text-xs font-regular text-gray-500 leading-relaxed">
+              <h3 className="text-base text-textBold text-gray-900 mb-2">SLA Management</h3>
+              <p className="text-xs text-textRegular text-gray-500 leading-relaxed">
                 Automated reminders and escalation triggers help keep technician response targets aligned.
               </p>
             </div>
@@ -310,8 +299,8 @@ export default function Home() {
               <div className="w-12 h-12 rounded-xl bg-primaryRed/10 text-primaryRed flex items-center justify-center mb-6 group-hover:bg-primaryRed group-hover:text-white transition-colors">
                 <Users className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-gray-900 mb-2">Role Management</h3>
-              <p className="text-xs font-regular text-gray-500 leading-relaxed">
+              <h3 className="text-base text-textBold text-gray-900 mb-2">Role Management</h3>
+              <p className="text-xs text-textRegular text-gray-500 leading-relaxed">
                 Dedicated interfaces for Employees, Managers, Trainers, HODs, and Admin staff.
               </p>
             </div>
@@ -326,11 +315,11 @@ export default function Home() {
             <div className="absolute top-0 right-0 -translate-y-10 translate-x-10 w-64 h-64 bg-white/5 rounded-full blur-2xl" />
 
             <div className="relative z-10 text-center max-w-2xl mx-auto">
-              <span className="text-xs font-bold text-primaryRed bg-white px-3 py-1 rounded-full uppercase tracking-wider inline-block mb-4">
+              <span className="text-xs text-textBold text-primaryRed bg-white px-3 py-1 rounded-full uppercase tracking-wider inline-block mb-4">
                 Real-time Tracking
               </span>
-              <h2 className="text-2xl md:text-3xl font-bold mb-4">Quick Ticket Status Lookup</h2>
-              <p className="text-sm text-gray-200 font-regular mb-8">
+              <h2 className="text-2xl md:text-3xl text-textBold mb-4">Quick Ticket Status Lookup</h2>
+              <p className="text-sm text-gray-200 text-textRegular mb-8">
                 Enter your ticket reference ID (e.g., TML-1024, TML-1025) to immediately check resolution progress.
               </p>
 
@@ -341,14 +330,14 @@ export default function Home() {
                     value={ticketId}
                     onChange={(e) => setTicketId(e.target.value)}
                     placeholder="Enter Ticket ID (e.g. TML-1025)"
-                    className="w-full bg-white/10 hover:bg-white/15 focus:bg-white text-white focus:text-gray-900 border border-white/20 focus:border-white rounded-xl py-3 pl-11 pr-4 text-sm font-regular outline-none transition-all placeholder:text-gray-300 focus:placeholder:text-gray-400"
+                    className="w-full bg-white/10 hover:bg-white/15 focus:bg-white text-white focus:text-gray-900 border border-white/20 focus:border-white rounded-xl py-3 pl-11 pr-4 text-sm text-textRegular outline-none transition-all placeholder:text-gray-300 focus:placeholder:text-gray-400"
                     required
                   />
                   <Search className="absolute left-4 top-3.5 w-4 h-4 text-gray-300 pointer-events-none" />
                 </div>
                 <button
                   type="submit"
-                  className="bg-primaryRed hover:bg-primaryRed/90 active:scale-95 text-white font-bold text-sm px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shrink-0"
+                  className="bg-primaryRed hover:bg-primaryRed/90 active:scale-95 text-white text-textBold text-sm px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shrink-0"
                 >
                   Track Status
                 </button>
@@ -361,16 +350,16 @@ export default function Home() {
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-white/10 pb-4 mb-4">
                         <div>
-                          <span className="text-[10px] text-gray-300 font-bold uppercase tracking-wider block">Ticket Ref</span>
-                          <span className="font-bold text-lg">{trackedTicket.id}</span>
+                          <span className="text-[10px] text-gray-300 text-textBold uppercase tracking-wider block">Ticket Ref</span>
+                          <span className="text-textBold text-lg">{trackedTicket.id}</span>
                         </div>
                         <div>
-                          <span className="text-[10px] text-gray-300 font-bold uppercase tracking-wider block text-left sm:text-right">Category</span>
-                          <span className="text-sm font-bold text-gray-200">{trackedTicket.category}</span>
+                          <span className="text-[10px] text-gray-300 text-textBold uppercase tracking-wider block text-left sm:text-right">Category</span>
+                          <span className="text-sm text-textBold text-gray-200">{trackedTicket.category}</span>
                         </div>
                         <div className="text-left sm:text-right">
-                          <span className="text-[10px] text-gray-300 font-bold uppercase tracking-wider block">Status</span>
-                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold mt-1 ${
+                          <span className="text-[10px] text-gray-300 text-textBold uppercase tracking-wider block">Status</span>
+                          <span className={`inline-block px-3 py-1 rounded-full text-xs text-textBold mt-1 ${
                             trackedTicket.status === "Resolved" 
                               ? "bg-emerald-500/25 text-emerald-300 border border-emerald-500/30"
                               : trackedTicket.status === "In Progress"
@@ -382,18 +371,18 @@ export default function Home() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm font-regular">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-textRegular">
                         <div>
-                          <span className="text-[10px] text-gray-300 font-bold block">Incident Title</span>
-                          <p className="text-gray-100 font-bold mt-0.5">{trackedTicket.title}</p>
+                          <span className="text-[10px] text-gray-300 text-textBold block">Incident Title</span>
+                          <p className="text-gray-100 text-textBold mt-0.5">{trackedTicket.title}</p>
                         </div>
                         <div>
-                          <span className="text-[10px] text-gray-300 font-bold block">Assigned Technician</span>
-                          <p className="text-gray-100 font-bold mt-0.5">{trackedTicket.technician}</p>
+                          <span className="text-[10px] text-gray-300 text-textBold block">Assigned Technician</span>
+                          <p className="text-gray-100 text-textBold mt-0.5">{trackedTicket.technician}</p>
                         </div>
                         <div className="sm:col-span-2">
-                          <span className="text-[10px] text-gray-300 font-bold block">Last Update</span>
-                          <p className="text-gray-100 font-bold mt-0.5">{trackedTicket.time}</p>
+                          <span className="text-[10px] text-gray-300 text-textBold block">Last Update</span>
+                          <p className="text-gray-100 text-textBold mt-0.5">{trackedTicket.time}</p>
                         </div>
                       </div>
                     </div>
@@ -401,8 +390,8 @@ export default function Home() {
                     <div className="bg-primaryRed/15 border border-primaryRed/30 rounded-2xl p-4 flex items-start gap-3">
                       <AlertCircle className="w-5 h-5 text-primaryRed shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="text-sm font-bold text-gray-100">Tracking Error</h4>
-                        <p className="text-xs text-gray-300 font-regular mt-1">{trackError}</p>
+                        <h4 className="text-sm text-textBold text-gray-100">Tracking Error</h4>
+                        <p className="text-xs text-gray-300 text-textRegular mt-1">{trackError}</p>
                       </div>
                     </div>
                   )}
@@ -418,8 +407,8 @@ export default function Home() {
       <section id="faq" className="py-20 bg-gray-50/50 border-t border-gray-100">
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 tracking-tight mb-3">Frequently Asked Questions</h2>
-            <p className="text-sm text-gray-500 font-regular">Quick answers to common inquiries about support workflows.</p>
+            <h2 className="text-3xl text-textBold text-gray-900 tracking-tight mb-3">Frequently Asked Questions</h2>
+            <p className="text-sm text-gray-500 text-textRegular">Quick answers to common inquiries about support workflows.</p>
           </div>
 
           <div className="space-y-4">
@@ -432,7 +421,7 @@ export default function Home() {
                 >
                   <button
                     onClick={() => toggleFaq(index)}
-                    className="w-full flex items-center justify-between p-5 text-left font-bold text-sm md:text-base text-gray-800 hover:text-primaryBlue transition-colors focus:outline-none"
+                    className="w-full flex items-center justify-between p-5 text-left text-textBold text-sm md:text-base text-gray-800 hover:text-primaryBlue transition-colors focus:outline-none"
                   >
                     <span>{faq.question}</span>
                     <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 shrink-0 ${isOpen ? "rotate-180 text-primaryBlue" : ""}`} />
@@ -443,7 +432,7 @@ export default function Home() {
                       isOpen ? "max-h-40 border-t border-gray-100" : "max-h-0"
                     }`}
                   >
-                    <p className="p-5 text-xs md:text-sm font-regular text-gray-600 leading-relaxed">
+                    <p className="p-5 text-xs md:text-sm text-textRegular text-gray-600 leading-relaxed">
                       {faq.answer}
                     </p>
                   </div>
@@ -459,11 +448,11 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
           
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-primaryBlue flex items-center justify-center text-[10px] font-bold text-white">T</div>
-            <span className="text-xs font-bold text-gray-500">© 2026 Tamarind Group Helpdesk. All rights reserved.</span>
+            <div className="w-6 h-6 rounded bg-primaryBlue flex items-center justify-center text-[10px] text-textBold text-white">T</div>
+            <span className="text-xs text-textBold text-gray-500">© 2026 Tamarind Group Helpdesk. All rights reserved.</span>
           </div>
 
-          <div className="flex items-center gap-6 text-xs font-regular text-gray-500">
+          <div className="flex items-center gap-6 text-xs text-textRegular text-gray-500">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
               SOP Database Online
@@ -479,4 +468,3 @@ export default function Home() {
     </div>
   );
 }
-
