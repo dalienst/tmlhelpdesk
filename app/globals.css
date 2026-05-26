@@ -17,15 +17,15 @@
 }
 
 @theme {
-  --color-primary-red: var(--primaryRed);
-  --color-primary-blue: var(--primaryBlue);
-  --color-technician-green: var(--technicianGreen);
-  --color-employee-blue: var(--employeeBlue);
-  --color-staff-yellow: var(--staffYellow);
-  --color-manager-orange: var(--managerOrange);
-  --color-admin-purple: var(--adminPurple);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-primary-red: #e20715;
+  --color-primary-blue: #2a2d7b;
+  --color-technician-green: #26a741;
+  --color-employee-blue: #549be4;
+  --color-staff-yellow: #f3be3a;
+  --color-manager-orange: #f58005;
+  --color-admin-purple: #664e87;
+  --color-background: #ffffff;
+  --color-foreground: #171717;
 
   --font-sans: "Open Sans", sans-serif;
 }
