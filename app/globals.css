@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -5,12 +6,44 @@
   --foreground: #171717;
   --primaryRed: #e20715;
   --primaryBlue: #2a2d7b;
+  --technicianGreen: #26a741;
+  --employeeBlue: #549be4;
+  --staffYellow: #f3be3a;
+  --managerOrange: #f58005;
+  --adminPurple: #664e87;
   --textBold: 500;
   --textRegular: 400;
   --textLight: 300;
 }
 
+@theme {
+  --color-primaryRed: var(--primaryRed);
+  --color-primaryBlue: var(--primaryBlue);
+  --color-technicianGreen: var(--technicianGreen);
+  --color-employeeBlue: var(--employeeBlue);
+  --color-staffYellow: var(--staffYellow);
+  --color-managerOrange: var(--managerOrange);
+  --color-adminPurple: var(--adminPurple);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --font-sans: "Open Sans", sans-serif;
+}
+
+@utility text-textBold {
+  font-weight: var(--textBold);
+}
+
+@utility text-textRegular {
+  font-weight: var(--textRegular);
+}
+
+@utility text-textLight {
+  font-weight: var(--textLight);
+}
+
 body {
   background-color: var(--background);
-  font-family: "Open Sans", sans-serif;
+  color: var(--foreground);
+  font-family: var(--font-sans);
 }
