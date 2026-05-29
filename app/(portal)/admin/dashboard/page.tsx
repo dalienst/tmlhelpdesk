@@ -1,18 +1,21 @@
 "use client";
 
 import { useFetchEmployees } from "@/hooks/accounts/actions";
-import { Loader2, Users, Shield, CheckCircle2, XCircle, Search, Mail, Hash, Building2, Briefcase, Plus, UserPlus, Upload, X, ChevronDown } from "lucide-react";
+import { User } from "@/services/accounts";
+import { Loader2, Users, Shield, CheckCircle2, XCircle, Search, Mail, Hash, Building2, Briefcase, Plus, UserPlus, Upload, X, ChevronDown, Edit2 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import CreateEmployee from "@/forms/accounts/CreateEmployee";
 import CreateEmployeeBulk from "@/forms/accounts/CreateEmployeeBulk";
 import CreateEmployeeBulkUpload from "@/forms/accounts/CreateEmployeeBulkUpload";
+import UpdateUser from "@/forms/accounts/UpdateUser";
 
 export default function AdminDashboard() {
   const { data: users, isLoading, isError } = useFetchEmployees();
   const [searchTerm, setSearchTerm] = useState("");
   
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [modalType, setModalType] = useState<'none' | 'single' | 'bulk' | 'csv'>('none');
+  const [modalType, setModalType] = useState<'none' | 'single' | 'bulk' | 'csv' | 'edit'>('none');
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
   // Close popover when clicking outside
@@ -26,7 +29,10 @@ export default function AdminDashboard() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const closeModal = () => setModalType('none');
+  const closeModal = () => {
+    setModalType('none');
+    setTimeout(() => setSelectedUser(null), 200); // clear after animation
+  };
 
   if (isLoading) {
     return (
@@ -176,6 +182,7 @@ export default function AdminDashboard() {
                 <th className="px-6 py-4 font-medium">Payroll No</th>
                 <th className="px-6 py-4 font-medium">Roles</th>
                 <th className="px-6 py-4 font-medium text-center">Status</th>
+                <th className="px-6 py-4 font-medium text-right">Manage</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -251,6 +258,18 @@ export default function AdminDashboard() {
                         </span>
                       )}
                     </td>
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setModalType('edit');
+                        }}
+                        className="inline-flex items-center justify-center p-2 rounded-lg text-gray-400 hover:text-primary-blue hover:bg-primary-blue/5 transition-colors border border-transparent hover:border-primary-blue/20"
+                        title="Manage User"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}
@@ -277,6 +296,7 @@ export default function AdminDashboard() {
               {modalType === 'single' && <CreateEmployee onSuccess={closeModal} onCancel={closeModal} />}
               {modalType === 'bulk' && <CreateEmployeeBulk onSuccess={closeModal} onCancel={closeModal} />}
               {modalType === 'csv' && <CreateEmployeeBulkUpload onSuccess={closeModal} onCancel={closeModal} />}
+              {modalType === 'edit' && selectedUser && <UpdateUser user={selectedUser} onSuccess={closeModal} onCancel={closeModal} />}
             </div>
           </div>
         </div>

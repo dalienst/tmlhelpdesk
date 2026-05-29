@@ -75,6 +75,7 @@ export interface UpdateUserByAdminPayload {
     is_technician?: boolean;
     is_staff?: boolean;
     is_admin?: boolean;
+    is_active?: boolean;
 }
 
 export interface resetMemberPassword {

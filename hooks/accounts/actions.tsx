@@ -1,5 +1,7 @@
 "use client";
 
+"use client";
+
 import { 
     getAccount, 
     getEmployee, 
@@ -8,8 +10,10 @@ import {
     createBulkEmployeeByAdmin,
     createBulkEmployeeByAdminCSV,
     downloadTemplate,
+    updateUserByAdmin,
     CreateEmployeeByAdminPayload,
-    CreateBulkEmployeeByAdminPayload
+    CreateBulkEmployeeByAdminPayload,
+    UpdateUserByAdminPayload
 } from "@/services/accounts";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxiosAuth from "../authentication/useAxiosAuth";
@@ -90,5 +94,18 @@ export function useDownloadTemplate() {
     
     return useMutation({
         mutationFn: () => downloadTemplate(token)
+    });
+}
+
+export function useUpdateUserByAdmin() {
+    const token = useAxiosAuth();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ reference, data }: { reference: string, data: UpdateUserByAdminPayload }) => updateUserByAdmin(reference, data, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["employees"] });
+            queryClient.invalidateQueries({ queryKey: ["employee"] });
+        },
     });
 }
