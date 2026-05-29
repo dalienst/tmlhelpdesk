@@ -25,7 +25,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen antialiased">
-        <Toaster position="top-center" />
+        <Toaster position="bottom-right" />
         <NextAuthProvider>
           <TanstackQueryProvider>
            
