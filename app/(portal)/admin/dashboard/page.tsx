@@ -1,12 +1,32 @@
 "use client";
 
 import { useFetchEmployees } from "@/hooks/accounts/actions";
-import { Loader2, Users, Shield, CheckCircle2, XCircle, Search, Mail, Hash, Building2, Briefcase } from "lucide-react";
-import { useState } from "react";
+import { Loader2, Users, Shield, CheckCircle2, XCircle, Search, Mail, Hash, Building2, Briefcase, Plus, UserPlus, Upload, X, ChevronDown } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import CreateEmployee from "@/forms/accounts/CreateEmployee";
+import CreateEmployeeBulk from "@/forms/accounts/CreateEmployeeBulk";
+import CreateEmployeeBulkUpload from "@/forms/accounts/CreateEmployeeBulkUpload";
 
 export default function AdminDashboard() {
   const { data: users, isLoading, isError } = useFetchEmployees();
   const [searchTerm, setSearchTerm] = useState("");
+  
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [modalType, setModalType] = useState<'none' | 'single' | 'bulk' | 'csv'>('none');
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  // Close popover when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+        setIsPopoverOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const closeModal = () => setModalType('none');
 
   if (isLoading) {
     return (
@@ -86,9 +106,9 @@ export default function AdminDashboard() {
       </div>
 
       {/* Users List Card */}
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
         {/* Toolbar */}
-        <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/50">
+        <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/50 rounded-t-2xl">
           <div className="relative max-w-md w-full">
             <input
               type="text"
@@ -99,9 +119,52 @@ export default function AdminDashboard() {
             />
             <Search className="absolute left-3.5 top-3 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
-          <button className="bg-primary-blue hover:bg-primary-blue/95 text-white px-4 py-2.5 rounded-xl text-sm text-textBold transition-colors shadow-sm whitespace-nowrap">
-            + New User
-          </button>
+          
+          {/* Popover Button */}
+          <div className="relative" ref={popoverRef}>
+            <button 
+              onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+              className="bg-primary-blue hover:bg-primary-blue/95 text-white px-4 py-2.5 rounded-xl text-sm text-textBold transition-colors shadow-sm whitespace-nowrap flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" /> New User <ChevronDown className={`w-3 h-3 transition-transform ${isPopoverOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            {/* Popover Menu */}
+            {isPopoverOpen && (
+              <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 shadow-xl rounded-xl py-2 z-50 animate-in fade-in slide-in-from-top-2">
+                <button
+                  onClick={() => { setModalType('single'); setIsPopoverOpen(false); }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-blue transition-colors text-left"
+                >
+                  <UserPlus className="w-4 h-4 text-gray-400" />
+                  <div className="flex-1">
+                    <p className="text-textBold">Single User</p>
+                    <p className="text-[10px] text-gray-500">Create one user manually</p>
+                  </div>
+                </button>
+                <button
+                  onClick={() => { setModalType('bulk'); setIsPopoverOpen(false); }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-manager-orange transition-colors text-left"
+                >
+                  <Users className="w-4 h-4 text-gray-400" />
+                  <div className="flex-1">
+                    <p className="text-textBold">Bulk Creation</p>
+                    <p className="text-[10px] text-gray-500">Add up to 15 users at once</p>
+                  </div>
+                </button>
+                <button
+                  onClick={() => { setModalType('csv'); setIsPopoverOpen(false); }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-emerald-600 transition-colors text-left"
+                >
+                  <Upload className="w-4 h-4 text-gray-400" />
+                  <div className="flex-1">
+                    <p className="text-textBold">CSV Upload</p>
+                    <p className="text-[10px] text-gray-500">Upload spreadsheet (max 100)</p>
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Table */}
@@ -195,6 +258,29 @@ export default function AdminDashboard() {
           </table>
         </div>
       </div>
+
+      {/* Reusable Modal Overlay */}
+      {modalType !== 'none' && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+          <div 
+            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity"
+            onClick={closeModal}
+          />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden transform transition-all animate-in zoom-in-95 duration-200">
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 p-2 rounded-xl text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors z-10"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="p-6 md:p-8 overflow-y-auto">
+              {modalType === 'single' && <CreateEmployee onSuccess={closeModal} onCancel={closeModal} />}
+              {modalType === 'bulk' && <CreateEmployeeBulk onSuccess={closeModal} onCancel={closeModal} />}
+              {modalType === 'csv' && <CreateEmployeeBulkUpload onSuccess={closeModal} onCancel={closeModal} />}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

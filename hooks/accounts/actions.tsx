@@ -1,7 +1,17 @@
 "use client";
 
-import { getAccount, getEmployee, getEmployees } from "@/services/accounts";
-import { useQuery } from "@tanstack/react-query";
+import { 
+    getAccount, 
+    getEmployee, 
+    getEmployees, 
+    createEmployeeByAdmin,
+    createBulkEmployeeByAdmin,
+    createBulkEmployeeByAdminCSV,
+    downloadTemplate,
+    CreateEmployeeByAdminPayload,
+    CreateBulkEmployeeByAdminPayload
+} from "@/services/accounts";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxiosAuth from "../authentication/useAxiosAuth";
 import useUserId from "../authentication/useUserId";
 
@@ -38,3 +48,47 @@ export function useFetchEmployee(reference: string) {
     });
 }
 
+// Mutations for Admin
+export function useCreateEmployee() {
+    const token = useAxiosAuth();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (data: CreateEmployeeByAdminPayload) => createEmployeeByAdmin(data, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["employees"] });
+        },
+    });
+}
+
+export function useCreateBulkEmployees() {
+    const token = useAxiosAuth();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (data: CreateBulkEmployeeByAdminPayload) => createBulkEmployeeByAdmin(data, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["employees"] });
+        },
+    });
+}
+
+export function useCreateBulkEmployeesCSV() {
+    const token = useAxiosAuth();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (data: { file: File }) => createBulkEmployeeByAdminCSV(data, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["employees"] });
+        },
+    });
+}
+
+export function useDownloadTemplate() {
+    const token = useAxiosAuth();
+    
+    return useMutation({
+        mutationFn: () => downloadTemplate(token)
+    });
+}
