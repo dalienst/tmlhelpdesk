@@ -50,17 +50,24 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
         initialValues={initialValues}
         onSubmit={async (values, { setSubmitting }) => {
           try {
-            const payload = {
-              is_active: Boolean(values.is_active),
-              is_admin: Boolean(values.is_admin),
-              is_manager: Boolean(values.is_manager),
-              is_employee: Boolean(values.is_employee),
-              is_technician: Boolean(values.is_technician),
-              is_hr: Boolean(values.is_hr),
-              is_hod: Boolean(values.is_hod),
-            };
-            await updateUserByAdmin(user.reference, payload, axios);
-            queryClient.invalidateQueries({ queryKey: ["employees"] });
+            const payload: any = {};
+            if (Boolean(values.is_active) !== initialValues.is_active) payload.is_active = Boolean(values.is_active);
+            if (Boolean(values.is_admin) !== initialValues.is_admin) payload.is_admin = Boolean(values.is_admin);
+            if (Boolean(values.is_manager) !== initialValues.is_manager) payload.is_manager = Boolean(values.is_manager);
+            if (Boolean(values.is_technician) !== initialValues.is_technician) payload.is_technician = Boolean(values.is_technician);
+            if (Boolean(values.is_hr) !== initialValues.is_hr) payload.is_hr = Boolean(values.is_hr);
+            if (Boolean(values.is_hod) !== initialValues.is_hod) payload.is_hod = Boolean(values.is_hod);
+
+            if (Object.keys(payload).length === 0) {
+              toast.success("No changes made.");
+              onSuccess?.();
+              return;
+            }
+
+            console.log("Sending partial payload:", payload);
+            const res = await updateUserByAdmin(user.reference, payload, axios);
+            console.log("Update response:", res);
+            await queryClient.refetchQueries({ queryKey: ["employees"] });
             toast.success("User updated successfully!");
             onSuccess?.();
           } catch (error: any) {
