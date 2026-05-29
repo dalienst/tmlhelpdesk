@@ -5,7 +5,7 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
 import Image from "next/image";
-import { Eye, EyeOff, Loader2, Lock, AlertCircle, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Loader2, Lock, AlertCircle, ArrowRight, ArrowLeft } from "lucide-react";
 import { useFormik } from "formik";
 import { activateAccount } from "@/services/accounts";
 
