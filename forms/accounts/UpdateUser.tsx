@@ -119,13 +119,6 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
                   </div>
                 </label>
 
-                <label className="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-gray-200 hover:border-employee-blue/30 hover:bg-employee-blue/5 transition-all">
-                  <Field type="checkbox" name="is_employee" className="mt-0.5 w-4 h-4 text-employee-blue rounded border-gray-300 focus:ring-employee-blue" />
-                  <div>
-                    <p className="text-sm text-textBold text-gray-900 flex items-center gap-1.5"><UserIcon className="w-3.5 h-3.5 text-employee-blue" /> Employee</p>
-                    <p className="text-[11px] text-gray-500 mt-0.5">Standard access</p>
-                  </div>
-                </label>
 
               </div>
             </div>

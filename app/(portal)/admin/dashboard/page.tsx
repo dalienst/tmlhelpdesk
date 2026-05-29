@@ -2,7 +2,7 @@
 
 import { useFetchEmployees } from "@/hooks/accounts/actions";
 import { User } from "@/services/accounts";
-import { Loader2, Users, Shield, CheckCircle2, XCircle, Search, Mail, Hash, Building2, Briefcase, Plus, UserPlus, Upload, X, ChevronDown, Edit2 } from "lucide-react";
+import { Loader2, Users, Shield, CheckCircle2, XCircle, Search, Mail, Hash, Building2, Briefcase, Plus, UserPlus, Upload, X, ChevronDown, Edit2, Filter } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import CreateEmployee from "@/forms/accounts/CreateEmployee";
 import CreateEmployeeBulk from "@/forms/accounts/CreateEmployeeBulk";
@@ -12,6 +12,7 @@ import UpdateUser from "@/forms/accounts/UpdateUser";
 export default function AdminDashboard() {
   const { data: users, isLoading, isError } = useFetchEmployees();
   const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
   
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [modalType, setModalType] = useState<'none' | 'single' | 'bulk' | 'csv' | 'edit'>('none');
@@ -55,11 +56,26 @@ export default function AdminDashboard() {
   }
 
   const activeUsersCount = users?.filter(u => u.is_active)?.length || 0;
-  const filteredUsers = users?.filter(user => 
-    user.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    user.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = users?.filter(user => {
+    const matchesSearch = user.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          user.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          user.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    let matchesRole = true;
+    if (roleFilter !== "all") {
+      switch (roleFilter) {
+        case "admin": matchesRole = !!user.is_admin; break;
+        case "manager": matchesRole = !!user.is_manager; break;
+        case "technician": matchesRole = !!user.is_technician; break;
+        case "hr": matchesRole = !!user.is_hr; break;
+        case "hod": matchesRole = !!user.is_hod; break;
+        case "trainer": matchesRole = !!user.is_trainer; break;
+        case "employee": matchesRole = !!user.is_employee; break;
+      }
+    }
+
+    return matchesSearch && matchesRole;
+  });
 
   return (
     <div className="space-y-6">
@@ -115,15 +131,35 @@ export default function AdminDashboard() {
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
         {/* Toolbar */}
         <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/50 rounded-t-2xl">
-          <div className="relative max-w-md w-full">
-            <input
-              type="text"
-              placeholder="Search by name or email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white border border-gray-200 focus:border-primary-blue rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none transition-all placeholder:text-gray-400 shadow-sm"
-            />
-            <Search className="absolute left-3.5 top-3 w-4 h-4 text-gray-400 pointer-events-none" />
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-2xl">
+            <div className="relative w-full sm:max-w-md">
+              <input
+                type="text"
+                placeholder="Search by name or email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-white border border-gray-200 focus:border-primary-blue rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none transition-all placeholder:text-gray-400 shadow-sm"
+              />
+              <Search className="absolute left-3.5 top-3 w-4 h-4 text-gray-400 pointer-events-none" />
+            </div>
+            
+            <div className="relative w-full sm:w-auto">
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="w-full sm:w-auto bg-white border border-gray-200 focus:border-primary-blue rounded-xl py-2.5 px-4 pr-10 text-sm outline-none transition-all shadow-sm appearance-none cursor-pointer text-gray-700 font-medium"
+              >
+                <option value="all">All Roles</option>
+                <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
+                <option value="technician">Technician</option>
+                <option value="hr">HR</option>
+                <option value="hod">HOD</option>
+                <option value="trainer">Trainer</option>
+                <option value="employee">Employee</option>
+              </select>
+              <Filter className="absolute right-3.5 top-3 w-4 h-4 text-gray-400 pointer-events-none" />
+            </div>
           </div>
           
           {/* Popover Button */}
@@ -188,7 +224,7 @@ export default function AdminDashboard() {
             <tbody className="divide-y divide-gray-100">
               {filteredUsers?.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-gray-500 text-sm">
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500 text-sm">
                     No users found matching your search.
                   </td>
                 </tr>
@@ -240,7 +276,22 @@ export default function AdminDashboard() {
                             Employee
                           </span>
                         )}
-                        {!user.is_admin && !user.is_manager && !user.is_technician && !user.is_employee && (
+                        {user.is_hr && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-pink-50 text-pink-600 border border-pink-200 text-[10px] text-textBold uppercase">
+                            HR
+                          </span>
+                        )}
+                        {user.is_hod && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-50 text-amber-600 border border-amber-200 text-[10px] text-textBold uppercase">
+                            HOD
+                          </span>
+                        )}
+                        {user.is_trainer && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-600 border border-indigo-200 text-[10px] text-textBold uppercase">
+                            Trainer
+                          </span>
+                        )}
+                        {!user.is_admin && !user.is_manager && !user.is_technician && !user.is_employee && !user.is_hr && !user.is_hod && !user.is_trainer && (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 border border-gray-200 text-[10px] text-textBold uppercase">
                             None
                           </span>
