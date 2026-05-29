@@ -5,11 +5,8 @@ import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
-import { Mail, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
+import { Mail, ArrowLeft, ArrowRight, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { forgotPassword } from "@/services/accounts";
 import { ForgotPasswordSchema } from "@/validation";
 
@@ -38,112 +35,158 @@ export default function ForgotPassword() {
   });
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-zinc-50 px-4">
-      {/* Background Decorative Elements */}
-      <div className="absolute inset-0 opacity-10" />
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#004d40]/10 rounded blur-[120px] animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-amber-500/10 rounded blur-[100px] animate-pulse delay-1000" />
-
-      <div className="relative z-10 w-full max-w-md">
-        <div className="text-center mb-8">
-          <Badge className="mb-4 bg-emerald-50 text-[#004d40] border-emerald-100 font-medium uppercase tracking-widest py-1.5 px-4 shadow-sm">
-            Tamarind Elimu System
-          </Badge>
-          <h1 className="text-4xl font-bold tracking-tighter text-zinc-900 mb-2">
-            Reset <span className="text-[#004d40]">Password.</span>
-          </h1>
-          <p className="text-zinc-500 font-medium">
-            Enter your email to receive recovery instructions.
-          </p>
-        </div>
-
-        <Card className="border-zinc-200 shadow-2xl rounded overflow-hidden bg-white/80 backdrop-blur-md">
-          <CardHeader className="pt-8 px-8">
-            <CardTitle className="text-2xl font-bold text-zinc-900 tracking-tight text-center">
-              Forgot Password
-            </CardTitle>
-            <CardDescription className="text-center font-medium text-zinc-500">
-              We will send you a secure code to reset your password.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-8 pb-8">
-            {isSuccess ? (
-              <div className="flex flex-col items-center justify-center space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="w-20 h-20 bg-emerald-100/50 rounded flex items-center justify-center">
-                  <CheckCircle2 className="w-10 h-10 text-emerald-600" />
-                </div>
-                <div className="text-center space-y-2">
-                  <h3 className="text-xl font-bold text-zinc-900">Check Your Inbox</h3>
-                  <p className="text-zinc-500 text-sm px-4">
-                    We've sent password reset instructions to <span className="font-semibold text-zinc-700">{formik.values.email}</span>. Please check your spam folder if it doesn't arrive within 5 minutes.
-                  </p>
-                </div>
-                <Button
-                  onClick={() => router.push("/reset-password")}
-                  className="w-full h-14 bg-[#004d40] hover:bg-[#00332b] text-white rounded text-lg font-bold shadow-lg shadow-[#004d40]/20 transition-all hover:scale-[1.01] active:scale-95"
-                >
-                  Enter Reset Code
-                </Button>
-              </div>
-            ) : (
-              <form onSubmit={formik.handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-[#004d40]/60 ml-1">
-                    Email Address
-                  </label>
-                  <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-zinc-300 group-focus-within:text-[#004d40] transition-colors" />
-                    </div>
-                    <Input
-                      name="email"
-                      type="email"
-                      required
-                      placeholder="name@tamarind.co.ke"
-                      value={formik.values.email}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      className={`pl-10 transition-all ${formik.touched.email && formik.errors.email
-                        ? "border-red-500 focus-visible:ring-red-500"
-                        : ""
-                        }`}
-                    />
-                  </div>
-                  {formik.touched.email && formik.errors.email && (
-                    <p className="text-xs text-red-500 font-medium ml-1">
-                      {formik.errors.email}
-                    </p>
-                  )}
-                </div>
-
-                <Button
-                  disabled={loading}
-                  type="submit"
-                  className="w-full h-14 bg-[#004d40] hover:bg-[#00332b] text-white rounded text-lg font-bold shadow-lg shadow-[#004d40]/20 transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-50"
-                >
-                  {loading ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>Sending...</span>
-                    </div>
-                  ) : (
-                    "Send Recovery Link"
-                  )}
-                </Button>
-              </form>
-            )}
-
-            <div className="mt-8 pt-6 border-t border-zinc-100 flex justify-center">
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-2 text-sm font-bold text-zinc-500 hover:text-[#004d40] transition-colors group"
-              >
-                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                Back to Login
-              </Link>
+    <div className="min-h-screen bg-white flex flex-col md:flex-row font-sans">
+      {/* Left Column: Visual branding and details */}
+      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-primary-blue to-primary-blue/90 relative overflow-hidden items-center justify-center p-12 text-white">
+        {/* Background abstract decorations */}
+        <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-96 h-96 bg-primary-red/10 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="relative z-10 max-w-lg">
+          <div className="flex items-center gap-3 mb-8">
+            <Image src="/logo2.png" alt="Tamarind Logo" width={55} height={55} className="object-contain invert brightness-0" />
+            <div>
+              <span className="text-textBold text-2xl tracking-tight block leading-none">TAMARIND</span>
+              <span className="text-[11px] tracking-wider text-white/70 text-textBold uppercase">Helpdesk Portal</span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+
+          <h2 className="text-3xl text-textBold mb-6 leading-tight">
+            Streamlined Support & Ticket Resolution
+          </h2>
+          <p className="text-sm text-textRegular text-white/80 leading-relaxed mb-8">
+            The official central support portal for Tamarind Group staff. Submit service requests, track technician assignments, and check updates in real-time.
+          </p>
+
+          {/* Role guides */}
+          <div className="space-y-4 pt-6 border-t border-white/10">
+            <h4 className="text-xs text-textBold text-white/60 uppercase tracking-wider">Helpdesk Channels</h4>
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+                <span className="text-employee-blue text-textBold">Employee Portal</span>
+                <span className="text-white/60">Report issues & track own tickets</span>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+                <span className="text-manager-orange text-textBold">Manager View</span>
+                <span className="text-white/60">Approve requests & review teams</span>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+                <span className="text-technician-green text-textBold">Technician Center</span>
+                <span className="text-white/60">Manage assignees & log solutions</span>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+                <span className="text-admin-purple text-textBold">Admin Console</span>
+                <span className="text-white/60">Full system configuration</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Column: Forgot Password Form */}
+      <div className="flex-grow md:w-1/2 flex items-center justify-center p-8 bg-gray-50/50">
+        <div className="w-full max-w-md bg-white rounded-2xl border border-gray-150 p-8 shadow-xl relative">
+          
+          {/* Logo Header for Mobile */}
+          <div className="flex md:hidden items-center gap-3 mb-6 justify-center">
+            <Image src="/logo2.png" alt="Tamarind Logo" width={40} height={40} className="object-contain" />
+            <div>
+              <span className="text-textBold text-lg text-primary-blue tracking-tight block leading-none">TAMARIND</span>
+              <span className="text-[10px] tracking-wider text-gray-500 text-textBold uppercase">Helpdesk Portal</span>
+            </div>
+          </div>
+
+          <div className="text-center md:text-left mb-8">
+            <h1 className="text-2xl text-textBold text-gray-900 mb-2">Forgot Password</h1>
+            <p className="text-xs text-textRegular text-gray-500">We will send you a secure code to reset your password</p>
+          </div>
+
+          {isSuccess ? (
+            <div className="flex flex-col items-center justify-center space-y-6">
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-650">
+                <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+              </div>
+              <div className="text-center space-y-2">
+                <h3 className="text-lg text-textBold text-gray-900">Check Your Inbox</h3>
+                <p className="text-gray-500 text-xs text-textRegular leading-relaxed px-4">
+                  We've sent password reset instructions to <span className="text-textBold text-gray-700">{formik.values.email}</span>. Please check your spam folder if it doesn't arrive within 5 minutes.
+                </p>
+              </div>
+              <button
+                onClick={() => router.push("/reset-password")}
+                className="w-full bg-primary-blue hover:bg-primary-blue/95 active:scale-[0.99] text-white text-textBold text-sm py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+              >
+                Enter Reset Code
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={formik.handleSubmit} className="space-y-6">
+              {/* Email Field */}
+              <div className="flex flex-col gap-2">
+                <label htmlFor="email" className="text-xs text-textBold text-gray-700">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.email}
+                    placeholder="name@tamarind.co.ke"
+                    className={`w-full bg-white border ${
+                      formik.touched.email && formik.errors.email
+                        ? "border-primary-red focus:border-primary-red"
+                        : "border-gray-200 focus:border-primary-blue"
+                    } rounded-xl py-3 pl-11 pr-4 text-sm text-textRegular outline-none transition-all placeholder:text-gray-400`}
+                    required
+                  />
+                  <Mail className="absolute left-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+                </div>
+                {formik.touched.email && formik.errors.email ? (
+                  <span className="text-[11px] text-textBold text-primary-red flex items-center gap-1 mt-0.5">
+                    <AlertCircle className="w-3 h-3 shrink-0" />
+                    {formik.errors.email}
+                  </span>
+                ) : null}
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-primary-blue hover:bg-primary-blue/95 active:scale-[0.99] disabled:opacity-50 disabled:active:scale-100 disabled:pointer-events-none text-white text-textBold text-sm py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    Send Recovery Link
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
+          )}
+
+          {/* Back to Login Link */}
+          <div className="mt-8 text-center border-t border-gray-100 pt-6">
+            <Link
+              href="/login"
+              className="text-xs text-textBold text-gray-500 hover:text-primary-blue transition-colors flex items-center justify-center gap-1 group"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              Back to Login
+            </Link>
+          </div>
+
+        </div>
       </div>
     </div>
   );
