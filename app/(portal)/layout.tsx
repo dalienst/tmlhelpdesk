@@ -6,11 +6,11 @@ export default function PortalLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Navbar>
-      <div className="flex flex-col min-h-[calc(100vh-8rem)]">
-        <div className="flex-1 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      <div className="flex flex-col min-h-screen">
+        <Navbar/>
+        <main className="mx-auto px-2 sm:px-4 lg:px-8 flex-1 animate-in fade-in slide-in-from-bottom-2 duration-500">
           {children}
-        </div>
+        </main>
         
         <footer className="mt-12 border-t border-gray-200 pt-8 pb-4">
           <div className="text-center">
@@ -20,6 +20,5 @@ export default function PortalLayout({
           </div>
         </footer>
       </div>
-    </Navbar>
   );
 }

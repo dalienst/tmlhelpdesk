@@ -21,7 +21,7 @@ function cn(...classes: (string | undefined | null | false)[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Navbar({ children }: { children?: React.ReactNode }) {
+export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { data: session, status } = useSession();
   const pathname = usePathname();
@@ -78,13 +78,13 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-gray-50/50">
+    <>
       {/* Top Navbar */}
       <nav className="sticky top-0 w-full z-40 bg-white border-b border-gray-200 py-3 pr-4 md:pr-8 pl-4 md:pl-6 shadow-sm">
         <div className="mx-auto flex justify-between items-center">
           {/* Logo */}
           <Link
-            href="/"
+            href={`/${rolePrefix}/dashboard`}
             className="flex items-center gap-3 group transition-transform hover:scale-105 active:scale-95"
           >
             <Image
@@ -270,10 +270,6 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
         </div>
       </aside>
 
-      {/* Main Page Content */}
-      <main className="flex-1 w-full max-w-7xl mx-auto p-4 md:p-8">
-        {children}
-      </main>
-    </div>
+    </>
   );
 }
