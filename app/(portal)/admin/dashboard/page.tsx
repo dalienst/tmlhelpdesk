@@ -1,9 +1,200 @@
-"use client"
+"use client";
+
+import { useFetchEmployees } from "@/hooks/accounts/actions";
+import { Loader2, Users, Shield, CheckCircle2, XCircle, Search, Mail, Hash, Building2, Briefcase } from "lucide-react";
+import { useState } from "react";
 
 export default function AdminDashboard() {
+  const { data: users, isLoading, isError } = useFetchEmployees();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[60vh] w-full items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary-blue" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex h-[60vh] w-full items-center justify-center">
+        <div className="text-center p-6 bg-primary-red/5 border border-primary-red/20 rounded-2xl">
+          <XCircle className="w-8 h-8 text-primary-red mx-auto mb-3" />
+          <h3 className="text-gray-900 text-textBold">Failed to load users</h3>
+          <p className="text-sm text-gray-500 mt-1">Please try refreshing the page.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const activeUsersCount = users?.filter(u => u.is_active)?.length || 0;
+  const filteredUsers = users?.filter(user => 
+    user.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    user.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div>
-      <h1>Dashboard</h1>
+    <div className="space-y-6">
+      {/* Header section */}
+      <div className="flex flex-col gap-1">
+        <h1 className="text-textBold text-gray-900">Admin Dashboard</h1>
+        <p className="text-sm text-gray-500 text-textRegular">
+          Overview of system users and platform access
+        </p>
+      </div>
+      
+      {/* Quick Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl px-4 py-3 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary-blue/10 flex items-center justify-center text-primary-blue shrink-0">
+            <Users className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 text-textBold uppercase tracking-wider">Total Users</p>
+            <p className="text-xl text-textBold text-gray-900 leading-none mt-1">{users?.length || 0}</p>
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl px-4 py-3 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600 shrink-0">
+            <CheckCircle2 className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 text-textBold uppercase tracking-wider">Active</p>
+            <p className="text-xl text-textBold text-gray-900 leading-none mt-1">{activeUsersCount}</p>
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl px-4 py-3 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-manager-orange/10 flex items-center justify-center text-manager-orange shrink-0">
+            <Briefcase className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 text-textBold uppercase tracking-wider">Departments</p>
+            <p className="text-xl text-textBold text-gray-900 leading-none mt-1">12</p>
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl px-4 py-3 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-admin-purple/10 flex items-center justify-center text-admin-purple shrink-0">
+            <Building2 className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 text-textBold uppercase tracking-wider">Units</p>
+            <p className="text-xl text-textBold text-gray-900 leading-none mt-1">5</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Users List Card */}
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/50">
+          <div className="relative max-w-md w-full">
+            <input
+              type="text"
+              placeholder="Search by name or email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-white border border-gray-200 focus:border-primary-blue rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none transition-all placeholder:text-gray-400 shadow-sm"
+            />
+            <Search className="absolute left-3.5 top-3 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+          <button className="bg-primary-blue hover:bg-primary-blue/95 text-white px-4 py-2.5 rounded-xl text-sm text-textBold transition-colors shadow-sm whitespace-nowrap">
+            + New User
+          </button>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-100 text-[11px] uppercase tracking-wider text-gray-500 text-textBold">
+                <th className="px-6 py-4 font-medium">User Details</th>
+                <th className="px-6 py-4 font-medium">Payroll No</th>
+                <th className="px-6 py-4 font-medium">Roles</th>
+                <th className="px-6 py-4 font-medium text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {filteredUsers?.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-8 text-center text-gray-500 text-sm">
+                    No users found matching your search.
+                  </td>
+                </tr>
+              ) : (
+                filteredUsers?.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-50/50 transition-colors group">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary-blue/5 border border-primary-blue/10 flex items-center justify-center text-primary-blue text-sm text-textBold shrink-0 group-hover:bg-primary-blue group-hover:text-white transition-colors">
+                          {user.first_name?.[0] || 'U'}
+                          {user.last_name?.[0] || ''}
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-900 text-textBold">
+                            {user.first_name} {user.last_name}
+                          </p>
+                          <div className="flex items-center gap-1.5 mt-0.5 text-gray-500">
+                            <Mail className="w-3 h-3" />
+                            <span className="text-[11px]">{user.email}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-1.5 text-gray-600 text-sm">
+                        <Hash className="w-3 h-3 text-gray-400" />
+                        {user.payroll_no || <span className="text-gray-400 italic">N/A</span>}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-wrap gap-1.5">
+                        {user.is_admin && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-admin-purple/10 text-admin-purple border border-admin-purple/20 text-[10px] text-textBold uppercase">
+                            <Shield className="w-3 h-3" /> Admin
+                          </span>
+                        )}
+                        {user.is_manager && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-manager-orange/10 text-manager-orange border border-manager-orange/20 text-[10px] text-textBold uppercase">
+                            Manager
+                          </span>
+                        )}
+                        {user.is_technician && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-technician-green/10 text-technician-green border border-technician-green/20 text-[10px] text-textBold uppercase">
+                            Technician
+                          </span>
+                        )}
+                        {user.is_employee && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-employee-blue/10 text-employee-blue border border-employee-blue/20 text-[10px] text-textBold uppercase">
+                            Employee
+                          </span>
+                        )}
+                        {!user.is_admin && !user.is_manager && !user.is_technician && !user.is_employee && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 border border-gray-200 text-[10px] text-textBold uppercase">
+                            None
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      {user.is_active ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 text-[10px] text-textBold uppercase tracking-wider">
+                          <CheckCircle2 className="w-3 h-3" /> Active
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 border border-gray-200 text-[10px] text-textBold uppercase tracking-wider">
+                          <XCircle className="w-3 h-3" /> Inactive
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
