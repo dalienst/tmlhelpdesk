@@ -8,7 +8,7 @@ export default function PortalLayout({
   return (
       <div className="flex flex-col min-h-screen">
         <Navbar/>
-        <main className="mx-auto px-2 sm:px-4 lg:px-8 flex-1 animate-in fade-in slide-in-from-bottom-2 duration-500">
+        <main className="mx-auto p-2 sm:px-4 lg:px-8 w-full flex-1 animate-in fade-in slide-in-from-bottom-2 duration-500">
           {children}
         </main>
         
