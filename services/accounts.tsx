@@ -42,6 +42,7 @@ export interface resetPassword {
 export interface updateUser {
     first_name?: string;
     last_name?: string;
+    email?: string;
 }
 
 export interface ActivateAccountPayload {
@@ -75,6 +76,7 @@ export interface UpdateUserByAdminPayload {
     is_technician?: boolean;
     is_staff?: boolean;
     is_admin?: boolean;
+    is_active?: boolean;
 }
 
 export interface resetMemberPassword {
