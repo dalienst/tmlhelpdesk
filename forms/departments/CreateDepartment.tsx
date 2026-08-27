@@ -36,9 +36,9 @@ export default function CreateDepartment({
 
   return (
     <div className="w-full">
-      <div className="mb-6">
-        <h2 className="text-xl text-textBold text-gray-900">Create New Department</h2>
-        <p className="text-sm text-gray-500 mt-1">
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold text-gray-900">Create New Department</h2>
+        <p className="text-xs text-gray-500 mt-0.5">
           Add an operational department within a branch/unit.
         </p>
       </div>
@@ -84,17 +84,17 @@ export default function CreateDepartment({
         }}
       >
         {({ isSubmitting, values, setFieldValue }) => (
-          <Form className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label htmlFor="unit" className="text-sm text-textBold text-gray-700">
+          <Form className="space-y-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label htmlFor="unit" className="text-xs font-semibold text-gray-700">
                   Parent Unit *
                 </label>
                 <Field
                   as="select"
                   id="unit"
                   name="unit"
-                  className="w-full bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded-lg px-3 py-2.5 text-sm outline-none transition-all"
+                  className="w-full bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded px-3 py-2 text-sm outline-none transition-all"
                 >
                   <option value="" disabled>
                     {unitsLoading ? "Loading units..." : "Select Unit"}
@@ -105,45 +105,45 @@ export default function CreateDepartment({
                     </option>
                   ))}
                 </Field>
-                <ErrorMessage name="unit" component="div" className="text-primary-red text-xs mt-1" />
+                <ErrorMessage name="unit" component="div" className="text-primary-red text-xs mt-0.5" />
               </div>
 
-              <div className="space-y-1.5">
-                <label htmlFor="code" className="text-sm text-textBold text-gray-700">
+              <div className="space-y-1">
+                <label htmlFor="code" className="text-xs font-semibold text-gray-700">
                   Department Code *
                 </label>
                 <Field
                   id="code"
                   name="code"
                   placeholder="e.g. IT-NRB, MAINT-MSA"
-                  className="w-full bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded-lg px-3 py-2.5 text-sm outline-none transition-all placeholder:text-gray-400 uppercase"
+                  className="w-full bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded px-3 py-2 text-sm outline-none transition-all placeholder:text-gray-400 uppercase"
                 />
-                <ErrorMessage name="code" component="div" className="text-primary-red text-xs mt-1" />
+                <ErrorMessage name="code" component="div" className="text-primary-red text-xs mt-0.5" />
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label htmlFor="name" className="text-sm text-textBold text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="name" className="text-xs font-semibold text-gray-700">
                 Department Name *
               </label>
               <Field
                 id="name"
                 name="name"
                 placeholder="e.g. Information Technology, Maintenance, Kitchen"
-                className="w-full bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded-lg px-3 py-2.5 text-sm outline-none transition-all placeholder:text-gray-400"
+                className="w-full bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded px-3 py-2 text-sm outline-none transition-all placeholder:text-gray-400"
               />
-              <ErrorMessage name="name" component="div" className="text-primary-red text-xs mt-1" />
+              <ErrorMessage name="name" component="div" className="text-primary-red text-xs mt-0.5" />
             </div>
 
-            <div className="space-y-1.5">
-              <label htmlFor="supervisor" className="text-sm text-textBold text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="supervisor" className="text-xs font-semibold text-gray-700">
                 Supervisor / Department Head (Optional)
               </label>
               <Field
                 as="select"
                 id="supervisor"
                 name="supervisor"
-                className="w-full bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded-lg px-3 py-2.5 text-sm outline-none transition-all"
+                className="w-full bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded px-3 py-2 text-sm outline-none transition-all"
               >
                 <option value="">None (Unassigned)</option>
                 {employees?.map((emp) => (
@@ -152,11 +152,11 @@ export default function CreateDepartment({
                   </option>
                 ))}
               </Field>
-              <ErrorMessage name="supervisor" component="div" className="text-primary-red text-xs mt-1" />
+              <ErrorMessage name="supervisor" component="div" className="text-primary-red text-xs mt-0.5" />
             </div>
 
-            <div className="space-y-1.5">
-              <label htmlFor="description" className="text-sm text-textBold text-gray-700">
+            <div className="space-y-1">
+              <label htmlFor="description" className="text-xs font-semibold text-gray-700">
                 Description / Scope of Work
               </label>
               <Field
@@ -164,35 +164,33 @@ export default function CreateDepartment({
                 rows={2}
                 id="description"
                 name="description"
-                placeholder="Types of requests or operations handled by this department..."
-                className="w-full bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded-lg px-3 py-2.5 text-sm outline-none transition-all placeholder:text-gray-400 resize-none"
+                placeholder="Types of requests handled..."
+                className="w-full bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded px-3 py-2 text-sm outline-none transition-all placeholder:text-gray-400 resize-none"
               />
-              <ErrorMessage name="description" component="div" className="text-primary-red text-xs mt-1" />
+              <ErrorMessage name="description" component="div" className="text-primary-red text-xs mt-0.5" />
             </div>
 
             {/* Staff Members Section */}
-            <div className="space-y-2 pt-2">
-              <label className="text-sm text-textBold text-gray-700 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <Users className="w-4 h-4 text-primary-blue" /> Assign Staff / Technicians
+            <div className="space-y-1.5 pt-1">
+              <label className="text-xs font-semibold text-gray-700 flex items-center justify-between">
+                <span className="flex items-center gap-1">
+                  <Users className="w-3.5 h-3.5 text-primary-blue" /> Assign Staff / Technicians
                 </span>
-                <span className="text-xs text-gray-400 font-normal">
+                <span className="text-[11px] text-gray-400 font-normal">
                   {values.staff.length} selected
                 </span>
               </label>
 
-              <div className="max-h-36 overflow-y-auto border border-gray-200 rounded-xl p-3 bg-gray-50/50 space-y-2">
+              <div className="max-h-32 overflow-y-auto border border-gray-200 rounded p-2.5 bg-gray-50/50 space-y-1.5">
                 {employeesLoading ? (
                   <p className="text-xs text-gray-400">Loading staff list...</p>
-                ) : employees?.length === 0 ? (
-                  <p className="text-xs text-gray-400">No employees found.</p>
                 ) : (
                   employees?.map((emp) => {
                     const isSelected = values.staff.includes(emp.email);
                     return (
                       <label
                         key={emp.id || emp.email}
-                        className={`flex items-center gap-2.5 p-2 rounded-lg cursor-pointer text-xs transition-all ${
+                        className={`flex items-center gap-2 p-1.5 rounded cursor-pointer text-xs transition-all ${
                           isSelected
                             ? "bg-primary-blue/10 border border-primary-blue/20 text-primary-blue font-semibold"
                             : "hover:bg-gray-100 text-gray-700"
@@ -226,13 +224,13 @@ export default function CreateDepartment({
               </div>
             </div>
 
-            <div className="pt-4 flex justify-end gap-3 border-t border-gray-100 mt-6">
+            <div className="pt-3 flex justify-end gap-2.5 border-t border-gray-100 mt-4">
               {onCancel && (
                 <button
                   type="button"
                   onClick={onCancel}
                   disabled={isSubmitting}
-                  className="px-4 py-2.5 rounded-lg text-sm text-textBold text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50 border border-transparent"
+                  className="px-3.5 py-2 rounded text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -240,9 +238,9 @@ export default function CreateDepartment({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-primary-blue hover:bg-primary-blue/95 text-white px-6 py-2.5 rounded-lg text-sm text-textBold transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center min-w-[140px]"
+                className="bg-primary-blue hover:bg-primary-blue/95 text-white px-5 py-2 rounded text-xs font-semibold transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center min-w-[120px]"
               >
-                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create Department"}
+                {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Create Department"}
               </button>
             </div>
           </Form>

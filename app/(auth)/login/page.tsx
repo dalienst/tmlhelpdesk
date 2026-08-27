@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -73,46 +73,42 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-white flex flex-col md:flex-row font-sans">
       {/* Left Column: Visual branding and details */}
-      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-primary-blue to-primary-blue/90 relative overflow-hidden items-center justify-center p-12 text-white">
-        {/* Background abstract decorations */}
-        <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-96 h-96 bg-primary-red/10 rounded-full blur-3xl pointer-events-none" />
-        
-        <div className="relative z-10 max-w-lg">
-          <div className="flex items-center gap-3 mb-8">
-            <Image src="/logo2.png" alt="Tamarind Logo" width={55} height={55} className="object-contain invert brightness-0" />
+      <div className="hidden md:flex md:w-1/2 bg-primary-blue relative overflow-hidden items-center justify-center p-10 text-white">
+        <div className="relative z-10 max-w-md">
+          <div className="flex items-center gap-3 mb-6">
+            <Image src="/logo2.png" alt="Tamarind Logo" width={44} height={44} className="object-contain invert brightness-0" />
             <div>
-              <span className="text-textBold text-2xl tracking-tight block leading-none">TAMARIND</span>
-              <span className="text-[11px] tracking-wider text-white/70 text-textBold uppercase">Helpdesk Portal</span>
+              <span className="font-semibold text-xl tracking-tight block leading-none">TAMARIND</span>
+              <span className="text-[10px] tracking-wider text-white/70 font-semibold uppercase">Helpdesk Portal</span>
             </div>
           </div>
 
-          <h2 className="text-3xl text-textBold mb-6 leading-tight">
+          <h2 className="text-xl font-semibold mb-3 leading-snug">
             Streamlined Support & Ticket Resolution
           </h2>
-          <p className="text-sm text-textRegular text-white/80 leading-relaxed mb-8">
+          <p className="text-xs text-white/80 leading-relaxed mb-6">
             The official central support portal for Tamarind Group staff. Submit service requests, track technician assignments, and check updates in real-time.
           </p>
 
           {/* Role guides */}
-          <div className="space-y-4 pt-6 border-t border-white/10">
-            <h4 className="text-xs text-textBold text-white/60 uppercase tracking-wider">Helpdesk Channels</h4>
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1">
-                <span className="text-employee-blue text-textBold">Employee Portal</span>
-                <span className="text-white/60">Report issues & track own tickets</span>
+          <div className="space-y-3 pt-4 border-t border-white/10">
+            <h4 className="text-[11px] font-semibold text-white/60 uppercase tracking-wider">Helpdesk Channels</h4>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="bg-white/5 border border-white/10 rounded p-2.5 flex flex-col gap-0.5">
+                <span className="text-employee-blue font-semibold text-xs">Employee Portal</span>
+                <span className="text-white/60 text-[11px]">Report issues & track tickets</span>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1">
-                <span className="text-manager-orange text-textBold">Manager View</span>
-                <span className="text-white/60">Approve requests & review teams</span>
+              <div className="bg-white/5 border border-white/10 rounded p-2.5 flex flex-col gap-0.5">
+                <span className="text-manager-orange font-semibold text-xs">Manager View</span>
+                <span className="text-white/60 text-[11px]">Approve requests & teams</span>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1">
-                <span className="text-technician-green text-textBold">Technician Center</span>
-                <span className="text-white/60">Manage assignees & log solutions</span>
+              <div className="bg-white/5 border border-white/10 rounded p-2.5 flex flex-col gap-0.5">
+                <span className="text-technician-green font-semibold text-xs">Technician Center</span>
+                <span className="text-white/60 text-[11px]">Manage tasks & log solutions</span>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1">
-                <span className="text-admin-purple text-textBold">Admin Console</span>
-                <span className="text-white/60">Full system configuration</span>
+              <div className="bg-white/5 border border-white/10 rounded p-2.5 flex flex-col gap-0.5">
+                <span className="text-admin-purple font-semibold text-xs">Admin Console</span>
+                <span className="text-white/60 text-[11px]">Full system configuration</span>
               </div>
             </div>
           </div>
@@ -120,27 +116,26 @@ export default function Login() {
       </div>
 
       {/* Right Column: Login Form */}
-      <div className="flex-grow md:w-1/2 flex items-center justify-center p-8 bg-gray-50/50">
-        <div className="w-full max-w-md bg-white rounded-2xl border border-gray-150 p-8 shadow-xl relative">
-          
+      <div className="flex-grow md:w-1/2 flex items-center justify-center p-6 bg-gray-50/50">
+        <div className="w-full max-w-sm bg-white rounded border border-gray-200 p-6 shadow-sm relative">
           {/* Logo Header for Mobile */}
-          <div className="flex md:hidden items-center gap-3 mb-6 justify-center">
-            <Image src="/logo2.png" alt="Tamarind Logo" width={40} height={40} className="object-contain" />
+          <div className="flex md:hidden items-center gap-2.5 mb-5 justify-center">
+            <Image src="/logo2.png" alt="Tamarind Logo" width={32} height={32} className="object-contain" />
             <div>
-              <span className="text-textBold text-lg text-primary-blue tracking-tight block leading-none">TAMARIND</span>
-              <span className="text-[10px] tracking-wider text-gray-500 text-textBold uppercase">Helpdesk Portal</span>
+              <span className="font-semibold text-base text-primary-blue tracking-tight block leading-none">TAMARIND</span>
+              <span className="text-[10px] tracking-wider text-gray-500 font-semibold uppercase">Helpdesk Portal</span>
             </div>
           </div>
 
-          <div className="text-center md:text-left mb-8">
-            <h1 className="text-2xl text-textBold text-gray-900 mb-2">Sign in to Support</h1>
-            <p className="text-xs text-textRegular text-gray-500">Enter your credentials to access the console</p>
+          <div className="text-center md:text-left mb-6">
+            <h1 className="text-xl font-semibold text-gray-900 mb-1">Sign in to Support</h1>
+            <p className="text-xs text-gray-500">Enter your credentials to access the console</p>
           </div>
 
-          <form onSubmit={formik.handleSubmit} className="space-y-6">
+          <form onSubmit={formik.handleSubmit} className="space-y-4">
             {/* Email Field */}
-            <div className="flex flex-col gap-2">
-              <label htmlFor="email" className="text-xs text-textBold text-gray-700">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="email" className="text-xs font-semibold text-gray-700">
                 Email Address
               </label>
               <div className="relative">
@@ -157,12 +152,12 @@ export default function Login() {
                     formik.touched.email && formik.errors.email
                       ? "border-primary-red focus:border-primary-red"
                       : "border-gray-200 focus:border-primary-blue"
-                  } rounded-xl py-3 pl-11 pr-4 text-sm text-textRegular outline-none transition-all placeholder:text-gray-400`}
+                  } rounded py-2 pl-9 pr-3 text-sm outline-none transition-all placeholder:text-gray-400`}
                 />
-                <Mail className="absolute left-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+                <Mail className="absolute left-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
               {formik.touched.email && formik.errors.email ? (
-                <span className="text-[11px] text-textBold text-primary-red flex items-center gap-1 mt-0.5">
+                <span className="text-[11px] font-semibold text-primary-red flex items-center gap-1 mt-0.5">
                   <AlertCircle className="w-3 h-3 shrink-0" />
                   {formik.errors.email}
                 </span>
@@ -170,14 +165,14 @@ export default function Login() {
             </div>
 
             {/* Password Field */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <div className="flex justify-between items-center">
-                <label htmlFor="password" className="text-xs text-textBold text-gray-700">
+                <label htmlFor="password" className="text-xs font-semibold text-gray-700">
                   Password
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="text-[11px] text-textBold text-primary-blue hover:text-primary-red transition-colors"
+                  className="text-[11px] font-semibold text-primary-blue hover:text-primary-red transition-colors"
                 >
                   Forgot password?
                 </Link>
@@ -191,28 +186,28 @@ export default function Login() {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.password}
-                  placeholder="••••••••"
+                  placeholder="••••••••••••"
                   className={`w-full bg-white border ${
                     formik.touched.password && formik.errors.password
                       ? "border-primary-red focus:border-primary-red"
                       : "border-gray-200 focus:border-primary-blue"
-                  } rounded-xl py-3 pl-11 pr-11 text-sm text-textRegular outline-none transition-all placeholder:text-gray-400`}
+                  } rounded py-2 pl-9 pr-9 text-sm outline-none transition-all placeholder:text-gray-400`}
                 />
-                <Lock className="absolute left-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+                <Lock className="absolute left-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none" />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-3.5 text-gray-450 hover:text-primary-blue transition-colors outline-none"
+                  className="absolute right-3 top-2.5 text-gray-400 hover:text-primary-blue transition-colors outline-none"
                 >
                   {showPassword ? (
-                    <EyeOff className="w-4 h-4 text-gray-400" />
+                    <EyeOff className="w-4 h-4" />
                   ) : (
-                    <Eye className="w-4 h-4 text-gray-400" />
+                    <Eye className="w-4 h-4" />
                   )}
                 </button>
               </div>
               {formik.touched.password && formik.errors.password ? (
-                <span className="text-[11px] text-textBold text-primary-red flex items-center gap-1 mt-0.5">
+                <span className="text-[11px] font-semibold text-primary-red flex items-center gap-1 mt-0.5">
                   <AlertCircle className="w-3 h-3 shrink-0" />
                   {formik.errors.password}
                 </span>
@@ -223,32 +218,31 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary-blue hover:bg-primary-blue/95 active:scale-[0.99] disabled:opacity-50 disabled:active:scale-100 disabled:pointer-events-none text-white text-textBold text-sm py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+              className="w-full bg-primary-blue hover:bg-primary-blue/95 active:scale-[0.99] disabled:opacity-50 text-white font-semibold text-xs py-2.5 rounded transition-all shadow-sm flex items-center justify-center gap-1.5"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   Authenticating...
                 </>
               ) : (
                 <>
                   Sign In
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
             </button>
           </form>
 
           {/* Back Link */}
-          <div className="mt-8 text-center border-t border-gray-100 pt-6">
+          <div className="mt-6 text-center border-t border-gray-100 pt-4">
             <Link
               href="/"
-              className="text-xs text-textRegular text-gray-500 hover:text-primary-blue transition-colors flex items-center justify-center gap-1"
+              className="text-xs text-gray-500 hover:text-primary-blue transition-colors flex items-center justify-center gap-1"
             >
               ← Back to homepage
             </Link>
           </div>
-
         </div>
       </div>
     </div>
