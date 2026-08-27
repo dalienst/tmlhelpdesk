@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -9,7 +9,8 @@ import {
   Menu, 
   X, 
   LayoutDashboard, 
-  Users, 
+  Building2,
+  Layers,
   Settings, 
   LogOut,
   ChevronRight,
@@ -47,7 +48,7 @@ export default function Navbar() {
           ? "employee"
           : "portal";
 
-  // Sidebar items based on boolean flags rather than arrays
+  // Sidebar items based on boolean flags
   const navItems = [
     { 
       name: "Dashboard", 
@@ -56,9 +57,15 @@ export default function Navbar() {
       show: isAdmin || isManager || isTechnician || isEmployee 
     },
     { 
-      name: "Users", 
-      href: `/${rolePrefix}/users`, 
-      icon: Users, 
+      name: "Units", 
+      href: `/admin/units`, 
+      icon: Building2, 
+      show: isAdmin 
+    },
+    { 
+      name: "Departments", 
+      href: `/admin/departments`, 
+      icon: Layers, 
       show: isAdmin 
     },
     { 
@@ -100,8 +107,8 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Controls & Nav */}
-          <div className="flex items-center gap-6">
+          {/* User Profile & Menu Button */}
+          <div className="flex items-center gap-3 sm:gap-4">
             <div className="hidden sm:flex flex-col items-end">
               <span className="text-sm text-textBold text-gray-800 leading-none">
                 {session?.user?.first_name} {session?.user?.last_name}
