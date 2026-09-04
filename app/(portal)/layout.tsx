@@ -1,4 +1,4 @@
-import Navbar from "@/components/portal/Navbar";
+﻿import Navbar from "@/components/portal/Navbar";
 
 export default function PortalLayout({
   children,
@@ -6,19 +6,19 @@ export default function PortalLayout({
   children: React.ReactNode;
 }) {
   return (
-      <div className="flex flex-col min-h-screen">
-        <Navbar/>
-        <main className="mx-auto p-2 sm:px-4 lg:px-8 w-full flex-1 animate-in fade-in slide-in-from-bottom-2 duration-500">
-          {children}
-        </main>
-        
-        <footer className="mt-12 border-t border-gray-200 pt-8 pb-4">
-          <div className="text-center">
-            <p className="text-gray-400 text-[10px] sm:text-xs text-textBold uppercase tracking-widest leading-relaxed">
-              &copy; {new Date().getFullYear()} Tamarind Group. Helpdesk Portal.
-            </p>
-          </div>
-        </footer>
-      </div>
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="mx-auto p-2 sm:px-4 lg:px-8 w-full flex-1 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        {children}
+      </main>
+      
+      <footer className="mt-12 border-t border-gray-200 pt-6 pb-4">
+        <div className="text-center">
+          <p className="text-gray-400 text-[10px] sm:text-xs font-semibold uppercase tracking-widest leading-relaxed">
+            &copy; {new Date().getFullYear()} Tamarind Group. Helpdesk Portal.
+          </p>
+        </div>
+      </footer>
+    </div>
   );
 }
