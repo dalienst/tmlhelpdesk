@@ -17,6 +17,7 @@ interface CustomUser extends User {
   is_superuser?: boolean;
   is_technician?: boolean;
   is_admin?: boolean;
+  is_hod?: boolean;
 }
 
 interface CustomSession extends Session {
@@ -44,8 +45,6 @@ export default function Login() {
         password: values.password,
       });
 
-      const session = (await getSession()) as CustomSession | null;
-
       setLoading(false);
 
       if (response?.error) {
@@ -53,18 +52,30 @@ export default function Login() {
       } else {
         toast.success("Login successful! Redirecting...");
 
-        if (session?.user?.is_admin === true) {
+        // Ensure session is loaded
+        let session = (await getSession()) as CustomSession | null;
+        if (!session?.user) {
+          await new Promise((resolve) => setTimeout(resolve, 150));
+          session = (await getSession()) as CustomSession | null;
+        }
+
+        const user = session?.user;
+        const isAdmin = user?.is_admin === true || user?.is_superuser === true;
+        const isTech = user?.is_technician === true || String(user?.is_technician) === "true";
+        const isManager = user?.is_manager === true || user?.is_hod === true;
+        const isEmployee = user?.is_employee === true;
+
+        // Technician role must take precedence over general employee!
+        if (isAdmin) {
           router.push("/admin/dashboard");
-        } else if (session?.user?.is_manager === true) {
-          router.push("/manager/dashboard");
-        } else if (session?.user?.is_employee === true) {
-          router.push("/employee/dashboard");
-        } else if (session?.user?.is_technician === true) {
+        } else if (isTech) {
           router.push("/technician/dashboard");
-        } else if (session?.user?.is_superuser === true) {
-          router.push("/admin/dashboard");
+        } else if (isManager) {
+          router.push("/manager/dashboard");
+        } else if (isEmployee) {
+          router.push("/employee/dashboard");
         } else {
-          router.push("/");
+          router.push("/employee/dashboard");
         }
       }
     },
@@ -84,7 +95,7 @@ export default function Login() {
           </div>
 
           <h2 className="text-xl font-semibold mb-3 leading-snug">
-            Streamlined Support & Ticket Resolution
+            Streamlined Support &amp; Ticket Resolution
           </h2>
           <p className="text-xs text-white/80 leading-relaxed mb-6">
             The official central support portal for Tamarind Group staff. Submit service requests, track technician assignments, and check updates in real-time.
@@ -96,15 +107,15 @@ export default function Login() {
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="bg-white/5 border border-white/10 rounded p-2.5 flex flex-col gap-0.5">
                 <span className="text-employee-blue font-semibold text-xs">Employee Portal</span>
-                <span className="text-white/60 text-[11px]">Report issues & track tickets</span>
+                <span className="text-white/60 text-[11px]">Report issues &amp; track tickets</span>
               </div>
               <div className="bg-white/5 border border-white/10 rounded p-2.5 flex flex-col gap-0.5">
                 <span className="text-manager-orange font-semibold text-xs">Manager View</span>
-                <span className="text-white/60 text-[11px]">Approve requests & teams</span>
+                <span className="text-white/60 text-[11px]">Approve requests &amp; teams</span>
               </div>
               <div className="bg-white/5 border border-white/10 rounded p-2.5 flex flex-col gap-0.5">
                 <span className="text-technician-green font-semibold text-xs">Technician Center</span>
-                <span className="text-white/60 text-[11px]">Manage tasks & log solutions</span>
+                <span className="text-white/60 text-[11px]">Manage tasks &amp; log solutions</span>
               </div>
               <div className="bg-white/5 border border-white/10 rounded p-2.5 flex flex-col gap-0.5">
                 <span className="text-admin-purple font-semibold text-xs">Admin Console</span>
@@ -240,7 +251,7 @@ export default function Login() {
               href="/"
               className="text-xs text-gray-500 hover:text-primary-blue transition-colors flex items-center justify-center gap-1"
             >
-              ← Back to homepage
+              Back to homepage
             </Link>
           </div>
         </div>

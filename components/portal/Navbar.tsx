@@ -37,10 +37,10 @@ export default function Navbar() {
 
   const rolePrefix = isAdmin
     ? "admin"
-    : isManager
-      ? "manager"
-      : isTechnician
-        ? "technician"
+    : isTechnician
+      ? "technician"
+      : isManager
+        ? "manager"
         : isEmployee
           ? "employee"
           : "portal";
@@ -276,4 +276,5 @@ export default function Navbar() {
     </>
   );
 }
+
 
