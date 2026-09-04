@@ -9,6 +9,7 @@ import { useFetchTickets } from "@/hooks/tickets/actions";
 import { User } from "@/services/accounts";
 import { Ticket as TicketType } from "@/services/tickets";
 import {
+  ArrowUpRight,
   Loader2,
   Users,
   Shield,
@@ -609,6 +610,16 @@ export default function AdminDashboard() {
         {/* Tab 2: Organization Tickets */}
         {activeTab === "tickets" && (
           <div className="overflow-x-auto">
+            <div className="p-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between text-xs flex-wrap gap-2">
+              <span className="text-gray-500">Live organization support tickets across all branches.</span>
+              <Link
+                href="/admin/tickets"
+                className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary-blue hover:bg-primary-blue/90 text-white rounded text-xs font-semibold transition shadow-sm"
+              >
+                <span>Open Dedicated Tickets Center</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
             {ticketsLoading ? (
               <div className="flex flex-col items-center justify-center py-12 text-gray-400 gap-2">
                 <Loader2 className="w-6 h-6 animate-spin text-red-600" />
@@ -700,14 +711,23 @@ export default function AdminDashboard() {
         {/* Tab 3: User Directory */}
         {activeTab === "users" && (
           <div className="overflow-x-auto">
-            <div className="p-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between text-xs">
+            <div className="p-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between text-xs flex-wrap gap-2">
               <span className="text-gray-500">Manage staff access roles, payroll numbers, and permissions.</span>
-              <button
-                onClick={() => setModalType("single_user")}
-                className="inline-flex items-center gap-1 px-2.5 py-1 bg-red-600 text-white rounded text-xs font-semibold hover:bg-red-700 transition"
-              >
-                <UserPlus className="w-3 h-3" /> Add Employee
-              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/admin/users"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary-blue hover:bg-primary-blue/90 text-white rounded text-xs font-semibold transition shadow-sm"
+                >
+                  <span>Open Dedicated User Directory</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
+                <button
+                  onClick={() => setModalType("single_user")}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-xs font-semibold transition"
+                >
+                  <UserPlus className="w-3 h-3" /> Add User
+                </button>
+              </div>
             </div>
 
             <table className="w-full text-left border-collapse text-xs">

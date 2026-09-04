@@ -14,7 +14,11 @@ import {
   Settings, 
   LogOut,
   ChevronRight,
-  Loader2
+  Loader2,
+  Ticket,
+  Users,
+  FolderTree,
+  ListTree
 } from "lucide-react";
 
 function cn(...classes: (string | undefined | null | false)[]) {
@@ -50,25 +54,49 @@ export default function Navbar() {
       name: "Dashboard", 
       href: `/${rolePrefix}/dashboard`, 
       icon: LayoutDashboard, 
-      show: isAdmin || isManager || isTechnician || isEmployee 
+      show: true 
     },
     { 
-      name: "Units", 
+      name: "Organization Tickets", 
+      href: `/admin/tickets`, 
+      icon: Ticket, 
+      show: Boolean(isAdmin) 
+    },
+    { 
+      name: "User Directory", 
+      href: `/admin/users`, 
+      icon: Users, 
+      show: Boolean(isAdmin) 
+    },
+    { 
+      name: "Units & Branches", 
       href: `/admin/units`, 
       icon: Building2, 
-      show: isAdmin 
+      show: Boolean(isAdmin) 
     },
     { 
       name: "Departments", 
       href: `/admin/departments`, 
       icon: Layers, 
-      show: isAdmin 
+      show: Boolean(isAdmin) 
+    },
+    { 
+      name: "Service Categories", 
+      href: `/admin/categories`, 
+      icon: FolderTree, 
+      show: Boolean(isAdmin) 
+    },
+    { 
+      name: "Issue Types & SLAs", 
+      href: `/admin/issues`, 
+      icon: ListTree, 
+      show: Boolean(isAdmin) 
     },
     { 
       name: "Settings", 
       href: `/${rolePrefix}/settings`, 
       icon: Settings, 
-      show: isAdmin || isManager || isTechnician || isEmployee 
+      show: true 
     },
   ];
 

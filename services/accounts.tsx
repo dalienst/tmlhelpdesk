@@ -57,6 +57,13 @@ export interface CreateEmployeeByAdminPayload {
     first_name: string;
     last_name: string;
     payroll_no: string;
+    is_employee?: boolean;
+    is_manager?: boolean;
+    is_trainer?: boolean;
+    is_hod?: boolean;
+    is_hr?: boolean;
+    is_technician?: boolean;
+    is_admin?: boolean;
 }
 
 export interface CreateBulkEmployeeByAdminPayload {

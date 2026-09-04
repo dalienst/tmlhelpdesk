@@ -1,10 +1,10 @@
-﻿"use client";
+"use client";
 
 import { updateUserByAdmin, User } from "@/services/accounts";
 import { Formik, Form, Field } from "formik";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { Loader2, Shield, Briefcase, Settings } from "lucide-react";
+import { Loader2, Shield, Briefcase, Settings, User as UserIcon, Building2, Users } from "lucide-react";
 import useAxiosAuth from "@/hooks/authentication/useAxiosAuth";
 
 interface UpdateUserProps {
@@ -54,6 +54,7 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
             if (Boolean(values.is_active) !== initialValues.is_active) payload.is_active = Boolean(values.is_active);
             if (Boolean(values.is_admin) !== initialValues.is_admin) payload.is_admin = Boolean(values.is_admin);
             if (Boolean(values.is_manager) !== initialValues.is_manager) payload.is_manager = Boolean(values.is_manager);
+            if (Boolean(values.is_employee) !== initialValues.is_employee) payload.is_employee = Boolean(values.is_employee);
             if (Boolean(values.is_technician) !== initialValues.is_technician) payload.is_technician = Boolean(values.is_technician);
             if (Boolean(values.is_hr) !== initialValues.is_hr) payload.is_hr = Boolean(values.is_hr);
             if (Boolean(values.is_hod) !== initialValues.is_hod) payload.is_hod = Boolean(values.is_hod);
@@ -95,16 +96,30 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
 
             {/* Roles */}
             <div>
-              <h3 className="text-xs font-semibold text-gray-900 mb-2 border-b border-gray-100 pb-1.5">Roles & Permissions</h3>
+              <div className="flex items-center justify-between mb-2 border-b border-gray-100 pb-1.5">
+                <h3 className="text-xs font-semibold text-gray-900">Roles & Permissions</h3>
+                <span className="text-[11px] text-gray-400">Select all that apply</span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <label className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded border border-gray-200 hover:border-admin-purple/30 hover:bg-admin-purple/5 transition-all">
-                  <Field type="checkbox" name="is_admin" className="mt-0.5 w-3.5 h-3.5 text-admin-purple rounded border-gray-300 focus:ring-admin-purple" />
+                {/* Employee */}
+                <label className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded border border-gray-200 hover:border-employee-blue/30 hover:bg-employee-blue/5 transition-all">
+                  <Field type="checkbox" name="is_employee" className="mt-0.5 w-3.5 h-3.5 text-employee-blue rounded border-gray-300 focus:ring-employee-blue" />
                   <div>
-                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-admin-purple" /> Admin</p>
-                    <p className="text-[11px] text-gray-500">Full system access</p>
+                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><UserIcon className="w-3.5 h-3.5 text-employee-blue" /> Employee</p>
+                    <p className="text-[11px] text-gray-500">Standard portal & self-service</p>
                   </div>
                 </label>
 
+                {/* Technician */}
+                <label className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded border border-gray-200 hover:border-technician-green/30 hover:bg-technician-green/5 transition-all">
+                  <Field type="checkbox" name="is_technician" className="mt-0.5 w-3.5 h-3.5 text-technician-green rounded border-gray-300 focus:ring-technician-green" />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Settings className="w-3.5 h-3.5 text-technician-green" /> Technician</p>
+                    <p className="text-[11px] text-gray-500">Handles support tickets</p>
+                  </div>
+                </label>
+
+                {/* Manager */}
                 <label className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded border border-gray-200 hover:border-manager-orange/30 hover:bg-manager-orange/5 transition-all">
                   <Field type="checkbox" name="is_manager" className="mt-0.5 w-3.5 h-3.5 text-manager-orange rounded border-gray-300 focus:ring-manager-orange" />
                   <div>
@@ -113,11 +128,30 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
                   </div>
                 </label>
 
-                <label className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded border border-gray-200 hover:border-technician-green/30 hover:bg-technician-green/5 transition-all">
-                  <Field type="checkbox" name="is_technician" className="mt-0.5 w-3.5 h-3.5 text-technician-green rounded border-gray-300 focus:ring-technician-green" />
+                {/* Admin */}
+                <label className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded border border-gray-200 hover:border-admin-purple/30 hover:bg-admin-purple/5 transition-all">
+                  <Field type="checkbox" name="is_admin" className="mt-0.5 w-3.5 h-3.5 text-admin-purple rounded border-gray-300 focus:ring-admin-purple" />
                   <div>
-                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Settings className="w-3.5 h-3.5 text-technician-green" /> Technician</p>
-                    <p className="text-[11px] text-gray-500">Handles support tickets</p>
+                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-admin-purple" /> Admin</p>
+                    <p className="text-[11px] text-gray-500">Full system access</p>
+                  </div>
+                </label>
+
+                {/* HOD */}
+                <label className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded border border-gray-200 hover:border-primary-blue/30 hover:bg-primary-blue/5 transition-all">
+                  <Field type="checkbox" name="is_hod" className="mt-0.5 w-3.5 h-3.5 text-primary-blue rounded border-gray-300 focus:ring-primary-blue" />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5 text-primary-blue" /> HOD</p>
+                    <p className="text-[11px] text-gray-500">Head of department</p>
+                  </div>
+                </label>
+
+                {/* HR */}
+                <label className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded border border-gray-200 hover:border-staff-yellow/40 hover:bg-staff-yellow/5 transition-all">
+                  <Field type="checkbox" name="is_hr" className="mt-0.5 w-3.5 h-3.5 text-amber-600 rounded border-gray-300 focus:ring-amber-500" />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-amber-600" /> HR</p>
+                    <p className="text-[11px] text-gray-500">Human resources personnel</p>
                   </div>
                 </label>
               </div>
