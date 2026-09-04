@@ -49,8 +49,9 @@ export function useCreateTicket() {
 
   return useMutation({
     mutationFn: (data: CreateTicketPayload) => createTicket(data, headers),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tickets"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["tickets"], refetchType: "all" });
+      await queryClient.refetchQueries({ queryKey: ["tickets"] });
     },
   });
 }
@@ -67,9 +68,10 @@ export function useUpdateTicket() {
       reference: string;
       data: UpdateTicketPayload;
     }) => updateTicket(reference, data, headers),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tickets"] });
-      queryClient.invalidateQueries({ queryKey: ["ticket"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["tickets"], refetchType: "all" });
+      await queryClient.refetchQueries({ queryKey: ["tickets"] });
+      await queryClient.invalidateQueries({ queryKey: ["ticket"] });
     },
   });
 }

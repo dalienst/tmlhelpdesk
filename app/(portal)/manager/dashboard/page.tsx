@@ -73,6 +73,7 @@ export default function ManagerDashboard() {
           resolution_notes: editResolutionNotes || undefined,
         },
       });
+      await refetch();
       toast.success("Ticket lifecycle updated successfully!");
       closeModal();
     } catch (err: any) {

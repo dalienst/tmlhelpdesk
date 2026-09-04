@@ -83,6 +83,7 @@ export default function AdminTicketsPage() {
           resolution_notes: editResolutionNotes || undefined,
         },
       });
+      await refetch();
       toast.success("Ticket updated successfully!");
       closeModal();
     } catch (err: any) {

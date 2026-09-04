@@ -18,7 +18,7 @@ import { Ticket as TicketType } from "@/services/tickets";
 import toast from "react-hot-toast";
 
 export default function TechnicianDashboard() {
-  const { data: tickets, isLoading, error } = useFetchTickets({ my_assigned: true });
+  const { data: tickets, isLoading, error, refetch } = useFetchTickets({ my_assigned: true });
   const { mutateAsync: updateTicket } = useUpdateTicket();
 
   const [selectedTicket, setSelectedTicket] = useState<TicketType | null>(null);
@@ -60,6 +60,7 @@ export default function TechnicianDashboard() {
           resolution_notes: resolveNotes || undefined,
         },
       });
+      await refetch();
       toast.success(`Ticket marked as ${targetStatus}!`);
       setSelectedTicket(null);
       setResolveNotes("");
