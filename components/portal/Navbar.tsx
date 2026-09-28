@@ -18,7 +18,10 @@ import {
   Ticket,
   Users,
   FolderTree,
-  ListTree
+  ListTree,
+  Plus,
+  PlusCircle,
+  HelpCircle
 } from "lucide-react";
 
 function cn(...classes: (string | undefined | null | false)[]) {
@@ -93,6 +96,18 @@ export default function Navbar() {
       show: Boolean(isAdmin) 
     },
     { 
+      name: "Raise a Request", 
+      href: `/tickets/new`, 
+      icon: PlusCircle, 
+      show: true 
+    },
+    { 
+      name: "Guides & Help Center", 
+      href: `/guides`, 
+      icon: HelpCircle, 
+      show: true 
+    },
+    { 
       name: "Settings", 
       href: `/${rolePrefix}/settings`, 
       icon: Settings, 
@@ -154,6 +169,14 @@ export default function Navbar() {
                 {isAdmin ? "System Administrator" : isManager ? "Department Manager" : isTechnician ? "Support Technician" : "Staff Employee"}
               </span>
             </div>
+
+            <Link
+              href="/tickets/new"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-blue hover:bg-primary-blue/95 text-white rounded text-xs font-semibold transition shadow-sm"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Raise Request</span>
+            </Link>
 
             <button
               onClick={() => setMenuOpen(true)}

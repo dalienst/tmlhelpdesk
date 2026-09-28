@@ -20,6 +20,8 @@ export function useFetchDepartments(unit?: string) {
     queryKey: ["departments", unit || "all"],
     queryFn: () => getDepartments(headers, unit),
     enabled: !!headers,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 }
 

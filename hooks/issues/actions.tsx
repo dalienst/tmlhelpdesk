@@ -22,9 +22,12 @@ export function useFetchIssues(params?: IssueQueryParams) {
       params?.category || "all_cat",
       params?.department || "all_dept",
       params?.technician || "all_tech",
+      params?.my_issues ? "my_i" : "",
     ],
     queryFn: () => getIssues(headers, params),
     enabled: !!headers,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 }
 

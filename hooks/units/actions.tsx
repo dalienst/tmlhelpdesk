@@ -20,6 +20,8 @@ export function useFetchUnits() {
     queryKey: ["units"],
     queryFn: () => getUnits(headers),
     enabled: !!headers,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 }
 

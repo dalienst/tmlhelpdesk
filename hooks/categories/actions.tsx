@@ -19,6 +19,8 @@ export function useFetchCategories(department?: string) {
     queryKey: ["categories", department || "all"],
     queryFn: () => getCategories(headers, department),
     enabled: !!headers,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 }
 

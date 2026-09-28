@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 import { useState } from "react";
 import { useFetchTickets, useUpdateTicket } from "@/hooks/tickets/actions";
 import { useFetchDepartments } from "@/hooks/departments/actions";
@@ -31,6 +34,7 @@ import {
 import toast from "react-hot-toast";
 
 export default function AdminTicketsPage() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [priorityFilter, setPriorityFilter] = useState("ALL");
@@ -235,12 +239,12 @@ export default function AdminTicketsPage() {
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isFetching ? "animate-spin" : ""}`} />
           </button>
-          <button
-            onClick={() => setModalType("create")}
+          <Link
+            href="/tickets/new"
             className="bg-primary-blue hover:bg-primary-blue/95 text-white px-4 py-2 rounded text-xs font-semibold flex items-center gap-1.5 transition shadow-sm"
           >
             <Plus className="w-4 h-4" /> Raise Ticket
-          </button>
+          </Link>
         </div>
       </div>
 

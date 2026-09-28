@@ -55,6 +55,7 @@ export interface IssueQueryParams {
   category?: string;
   department?: string;
   technician?: string;
+  my_issues?: boolean;
 }
 
 export const getIssues = async (
@@ -65,6 +66,7 @@ export const getIssues = async (
   if (params?.category) query.append("category", params.category);
   if (params?.department) query.append("department", params.department);
   if (params?.technician) query.append("technician", params.technician);
+  if (params?.my_issues) query.append("my_issues", "true");
 
   const queryString = query.toString();
   const url = queryString ? `/api/v1/issues/?${queryString}` : `/api/v1/issues/`;
