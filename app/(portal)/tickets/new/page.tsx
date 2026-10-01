@@ -374,7 +374,7 @@ export default function NewTicketPage() {
                             ? "Select a category first"
                             : issuesLoading
                               ? "Loading service types..."
-                              : "Select Request (e.g. LPO Request, POS Repair)"}
+                              : "Select Service Request (e.g. POS Fault, AC Leak, Uniform Request)"}
                         </option>
                         {filteredIssues.map((i) => (
                           <option key={i.id} value={i.name}>
@@ -395,7 +395,7 @@ export default function NewTicketPage() {
                       <Field
                         type="text"
                         name="subject"
-                        placeholder="e.g., LPO Request for Kitchen Utensils - Quotation Attached"
+                        placeholder="e.g. POS terminal frozen at Bar Station 2, AC dripping in Room 204, or Uniform Replacement"
                         className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded outline-none focus:border-primary-blue focus:ring-1 focus:ring-primary-blue transition text-gray-800"
                       />
                       <ErrorMessage name="subject" component="p" className="text-primary-red text-[11px] mt-1" />
@@ -428,7 +428,7 @@ export default function NewTicketPage() {
                       as="textarea"
                       rows={5}
                       name="description"
-                      placeholder="Provide comprehensive details (e.g. item specifications, vendor quote reference, room/location number, machine serial, steps to reproduce, or authorization background)..."
+                      placeholder="Provide clear details (e.g. equipment location, station/room number, fault observed, steps to reproduce, or required items)..."
                       className="w-full p-3 text-xs bg-white border border-gray-200 rounded outline-none focus:border-primary-blue focus:ring-1 focus:ring-primary-blue transition text-gray-800 leading-relaxed"
                     />
                     <ErrorMessage name="description" component="p" className="text-primary-red text-[11px] mt-1" />
@@ -440,7 +440,7 @@ export default function NewTicketPage() {
                       Supporting Documents / Attachments <span className="text-gray-400 font-normal">(Optional)</span>
                     </label>
                     <p className="text-[11px] text-gray-500 mb-3">
-                      Attach supplier quotations (for LPO requests), invoices, screenshots, or error logs. Max 15MB per file.
+                      Attach photos of faulty equipment, error screenshots, diagnostic logs, invoices, or specifications (Max 15MB per file).
                     </p>
 
                     <div className="border-2 border-dashed border-gray-200 rounded p-5 text-center hover:border-primary-blue/50 hover:bg-gray-50/50 transition cursor-pointer relative">

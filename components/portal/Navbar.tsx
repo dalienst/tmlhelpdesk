@@ -21,7 +21,8 @@ import {
   ListTree,
   Plus,
   PlusCircle,
-  HelpCircle
+  HelpCircle,
+  BarChart3
 } from "lucide-react";
 
 function cn(...classes: (string | undefined | null | false)[]) {
@@ -100,6 +101,12 @@ export default function Navbar() {
       href: `/tickets/new`, 
       icon: PlusCircle, 
       show: true 
+    },
+    { 
+      name: "Reports & Analytics", 
+      href: `/reports`, 
+      icon: BarChart3, 
+      show: Boolean(isAdmin || isManager) 
     },
     { 
       name: "Guides & Help Center", 

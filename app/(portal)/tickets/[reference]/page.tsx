@@ -309,7 +309,7 @@ ${escalationNote}`
 
       await refetchAttachments();
       await refetch();
-      toast.success(`${attachmentType === "FULFILLMENT_ATTACHMENT" ? "Fulfillment document / LPO" : "File"} attached successfully!`, { id: toastId });
+      toast.success(`${attachmentType === "FULFILLMENT_ATTACHMENT" ? "Resolution deliverable / proof of work" : "Supporting file"} attached successfully!`, { id: toastId });
     } catch (err: any) {
       toast.error(err?.message || "Failed to attach file. Please try again.", { id: toastId });
     } finally {
@@ -510,7 +510,7 @@ ${escalationNote}`
                   <Paperclip className="w-3.5 h-3.5 text-primary-blue" /> Two-Way Attachments &amp; Deliverables
                 </h2>
                 <p className="text-[11px] text-gray-500 mt-0.5">
-                  Requesters attach quotations &amp; specs; technicians and purchasing officers attach generated LPOs and proof of service.
+                  Requesters attach fault photos &amp; error specs; technicians and officers attach proof of work, signed job cards, or completion deliverables.
                 </p>
               </div>
             </div>
@@ -522,7 +522,7 @@ ${escalationNote}`
                 {attachmentsList.filter(a => a.attachment_type === "REQUEST_ATTACHMENT").length > 0 && (
                   <div className="space-y-2">
                     <span className="text-[11px] font-bold text-gray-600 uppercase tracking-wider block">
-                      Requester Supporting Documents (Quotations / Specs)
+                      Requester Supporting Documents & Photos (Fault Photos / Specs)
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {attachmentsList
@@ -559,7 +559,7 @@ ${escalationNote}`
                 {attachmentsList.filter(a => a.attachment_type === "FULFILLMENT_ATTACHMENT").length > 0 && (
                   <div className="space-y-2 pt-2 border-t border-gray-100">
                     <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider block">
-                      Fulfillment Deliverables (Generated LPO / Completion Proof)
+                      Resolution Deliverables & Proof of Work (Signed Job Cards / Deliverables)
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {attachmentsList
@@ -584,7 +584,7 @@ ${escalationNote}`
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-emerald-300 rounded text-xs font-semibold text-emerald-800 hover:bg-emerald-100 transition shrink-0"
                             >
-                              <Download className="w-3 h-3" /> Download LPO
+                              <Download className="w-3 h-3" /> Download Deliverable
                             </a>
                           </div>
                         ))}
@@ -603,7 +603,7 @@ ${escalationNote}`
               <div className="p-4 rounded border border-dashed border-gray-200 bg-gray-50/50 flex flex-col items-center justify-center text-center gap-2 pt-3">
                 <UploadCloud className="w-7 h-7 text-primary-blue" />
                 <p className="text-xs font-semibold text-gray-800">
-                  Upload Fulfillment Document / Generated LPO
+                  Upload Resolution Deliverable / Proof of Service
                 </p>
                 <p className="text-[10px] text-gray-400">
                   Stored directly on Tamarind MinIO Object Storage (media.tamarind.co.ke / tml-helpdesk)
@@ -615,7 +615,7 @@ ${escalationNote}`
                     </>
                   ) : (
                     <>
-                      <Paperclip className="w-3.5 h-3.5" /> Attach LPO / Document
+                      <Paperclip className="w-3.5 h-3.5" /> Attach Deliverable / File
                     </>
                   )}
                   <input
