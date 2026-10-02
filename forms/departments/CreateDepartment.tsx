@@ -2,6 +2,7 @@
 
 import { useCreateDepartment } from "@/hooks/departments/actions";
 import { useFetchUnits } from "@/hooks/units/actions";
+import { useFetchGroups } from "@/hooks/groups/actions";
 import { useFetchEmployees } from "@/hooks/accounts/actions";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -18,6 +19,7 @@ const validationSchema = Yup.object({
   unit: Yup.string().required("Unit is required"),
   name: Yup.string().required("Department name is required"),
   code: Yup.string().required("Department code is required"),
+  group: Yup.string().nullable(),
   description: Yup.string().nullable(),
   supervisor: Yup.string().nullable(),
   staff: Yup.array().of(Yup.string()),
@@ -30,6 +32,7 @@ export default function CreateDepartment({
 }: CreateDepartmentProps) {
   const { mutateAsync: createDepartment } = useCreateDepartment();
   const { data: units, isLoading: unitsLoading } = useFetchUnits();
+  const { data: groups, isLoading: groupsLoading } = useFetchGroups();
   const { data: employees, isLoading: employeesLoading } = useFetchEmployees();
 
   const activeUnits = units?.filter((u) => u.is_active) || [];
@@ -48,6 +51,7 @@ export default function CreateDepartment({
           unit: defaultUnit || (activeUnits[0]?.name || ""),
           name: "",
           code: "",
+          group: "",
           description: "",
           supervisor: "",
           staff: [] as string[],
@@ -106,6 +110,26 @@ export default function CreateDepartment({
                   ))}
                 </Field>
                 <ErrorMessage name="unit" component="div" className="text-primary-red text-xs mt-0.5" />
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="group" className="text-xs font-semibold text-gray-700">
+                  Functional Group (Optional)
+                </label>
+                <Field
+                  as="select"
+                  id="group"
+                  name="group"
+                  className="w-full bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded px-3 py-2 text-sm outline-none transition-all"
+                >
+                  <option value="">None (Stand-alone Department)</option>
+                  {groups?.map((g) => (
+                    <option key={g.id || g.code} value={g.name}>
+                      {g.name} ({g.code})
+                    </option>
+                  ))}
+                </Field>
+                <ErrorMessage name="group" component="div" className="text-primary-red text-xs mt-0.5" />
               </div>
 
               <div className="space-y-1">

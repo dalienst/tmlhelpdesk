@@ -123,6 +123,7 @@ export interface ComprehensiveAnalyticsResponse {
   };
   tier3_executive: {
     unit_comparison: UnitComparisonItem[];
+    group_comparison: UnitComparisonItem[];
     procurement_lifecycle: ProcurementLifecycle;
   };
 }
@@ -133,9 +134,10 @@ export interface AnalyticsQueryParams {
   end_date?: string;
   unit?: string;
   department?: string;
+  group?: string;
   priority?: string;
   status?: string;
-  type?: "tickets" | "technicians" | "units";
+  type?: "tickets" | "technicians" | "units" | "groups";
 }
 
 export const getAnalytics = async (
@@ -148,6 +150,7 @@ export const getAnalytics = async (
   if (params?.end_date) queryParams.append("end_date", params.end_date);
   if (params?.unit && params.unit !== "ALL") queryParams.append("unit", params.unit);
   if (params?.department && params.department !== "ALL") queryParams.append("department", params.department);
+  if (params?.group && params.group !== "ALL") queryParams.append("group", params.group);
   if (params?.priority && params.priority !== "ALL") queryParams.append("priority", params.priority);
   if (params?.status && params.status !== "ALL") queryParams.append("status", params.status);
 
@@ -167,6 +170,7 @@ export const exportReportCSV = async (
   if (params?.end_date) queryParams.append("end_date", params.end_date);
   if (params?.unit && params.unit !== "ALL") queryParams.append("unit", params.unit);
   if (params?.department && params.department !== "ALL") queryParams.append("department", params.department);
+  if (params?.group && params.group !== "ALL") queryParams.append("group", params.group);
   if (params?.priority && params.priority !== "ALL") queryParams.append("priority", params.priority);
   if (params?.status && params.status !== "ALL") queryParams.append("status", params.status);
 

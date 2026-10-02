@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -17,12 +17,15 @@ import {
   Loader2,
   Ticket,
   Users,
+  Users2,
   FolderTree,
   ListTree,
   Plus,
   PlusCircle,
   HelpCircle,
-  BarChart3
+  BarChart3,
+  ShieldAlert,
+  Compass,
 } from "lucide-react";
 
 function cn(...classes: (string | undefined | null | false)[]) {
@@ -39,19 +42,42 @@ export default function Navbar() {
   }, [pathname]);
 
   const isAdmin = session?.user?.is_admin || session?.user?.is_superuser;
-  const isManager = session?.user?.is_manager;
+  const isDirector = session?.user?.is_director;
+  const isGeneralManager = session?.user?.is_general_manager;
+  const isGroupManager = session?.user?.is_group_manager;
+  const isManager = session?.user?.is_manager || session?.user?.is_hod;
   const isTechnician = session?.user?.is_technician;
   const isEmployee = session?.user?.is_employee;
 
   const rolePrefix = isAdmin
     ? "admin"
-    : isTechnician
-      ? "technician"
-      : isManager
-        ? "manager"
-        : isEmployee
-          ? "employee"
-          : "portal";
+    : isDirector
+      ? "director"
+      : isGeneralManager
+        ? "gm"
+        : isGroupManager
+          ? "group-manager"
+          : isTechnician
+            ? "technician"
+            : isManager
+              ? "manager"
+              : isEmployee
+                ? "employee"
+                : "portal";
+
+  const roleTitle = isAdmin
+    ? "System Administrator"
+    : isDirector
+      ? "Executive Director"
+      : isGeneralManager
+        ? "General Manager"
+        : isGroupManager
+          ? "Group Operations Manager"
+          : isManager
+            ? "Department Manager"
+            : isTechnician
+              ? "Support Technician"
+              : "Staff Employee";
 
   const navItems = [
     { 
@@ -59,6 +85,24 @@ export default function Navbar() {
       href: `/${rolePrefix}/dashboard`, 
       icon: LayoutDashboard, 
       show: true 
+    },
+    { 
+      name: "Director Executive Dashboard", 
+      href: `/director/dashboard`, 
+      icon: Compass, 
+      show: Boolean(isAdmin || isDirector) 
+    },
+    { 
+      name: "GM Property Dashboard", 
+      href: `/gm/dashboard`, 
+      icon: Building2, 
+      show: Boolean(isAdmin || isGeneralManager) 
+    },
+    { 
+      name: "Group Operations Dashboard", 
+      href: `/group-manager/dashboard`, 
+      icon: Users2, 
+      show: Boolean(isAdmin || isGroupManager) 
     },
     { 
       name: "Organization Tickets", 
@@ -76,6 +120,12 @@ export default function Navbar() {
       name: "Units & Branches", 
       href: `/admin/units`, 
       icon: Building2, 
+      show: Boolean(isAdmin) 
+    },
+    { 
+      name: "Functional Groups", 
+      href: `/admin/groups`, 
+      icon: Users2, 
       show: Boolean(isAdmin) 
     },
     { 
@@ -97,6 +147,12 @@ export default function Navbar() {
       show: Boolean(isAdmin) 
     },
     { 
+      name: "Escalation Rules", 
+      href: `/manager/escalations`, 
+      icon: ShieldAlert, 
+      show: Boolean(isAdmin || isManager) 
+    },
+    { 
       name: "Raise a Request", 
       href: `/tickets/new`, 
       icon: PlusCircle, 
@@ -106,7 +162,7 @@ export default function Navbar() {
       name: "Reports & Analytics", 
       href: `/reports`, 
       icon: BarChart3, 
-      show: Boolean(isAdmin || isManager) 
+      show: Boolean(isAdmin || isManager || isDirector || isGeneralManager || isGroupManager) 
     },
     { 
       name: "Guides & Help Center", 
@@ -167,13 +223,19 @@ export default function Navbar() {
                 "text-[10px] text-textBold uppercase mt-1.5 px-2.5 py-0.5 rounded border shadow-sm font-semibold",
                 isAdmin
                   ? "text-admin-purple bg-admin-purple/10 border-admin-purple/20"
-                  : isManager
-                    ? "text-manager-orange bg-manager-orange/10 border-manager-orange/20"
-                    : isTechnician
-                      ? "text-technician-green bg-technician-green/10 border-technician-green/20"
-                      : "text-employee-blue bg-employee-blue/10 border-employee-blue/20"
+                  : isDirector
+                    ? "text-purple-700 bg-purple-50 border-purple-200"
+                    : isGeneralManager
+                      ? "text-emerald-700 bg-emerald-50 border-emerald-200"
+                      : isGroupManager
+                        ? "text-blue-700 bg-blue-50 border-blue-200"
+                        : isManager
+                          ? "text-manager-orange bg-manager-orange/10 border-manager-orange/20"
+                          : isTechnician
+                            ? "text-technician-green bg-technician-green/10 border-technician-green/20"
+                            : "text-employee-blue bg-employee-blue/10 border-employee-blue/20"
               )}>
-                {isAdmin ? "System Administrator" : isManager ? "Department Manager" : isTechnician ? "Support Technician" : "Staff Employee"}
+                {roleTitle}
               </span>
             </div>
 
@@ -240,11 +302,17 @@ export default function Navbar() {
               "w-10 h-10 rounded flex items-center justify-center text-white text-sm font-semibold border shadow-sm shrink-0",
               isAdmin
                 ? "bg-admin-purple border-admin-purple/20"
-                : isManager
-                  ? "bg-manager-orange border-manager-orange/20"
-                  : isTechnician
-                    ? "bg-technician-green border-technician-green/20"
-                    : "bg-employee-blue border-employee-blue/20"
+                : isDirector
+                  ? "bg-purple-700 border-purple-800"
+                  : isGeneralManager
+                    ? "bg-emerald-600 border-emerald-700"
+                    : isGroupManager
+                      ? "bg-primary-blue border-blue-700"
+                      : isManager
+                        ? "bg-manager-orange border-manager-orange/20"
+                        : isTechnician
+                          ? "bg-technician-green border-technician-green/20"
+                          : "bg-employee-blue border-employee-blue/20"
             )}>
               {session?.user?.first_name?.[0] || 'U'}
               {session?.user?.last_name?.[0] || ''}
@@ -261,13 +329,19 @@ export default function Navbar() {
                   "inline-flex items-center px-2 py-0.5 rounded border text-[10px] font-semibold uppercase",
                   isAdmin
                     ? "bg-admin-purple/10 border-admin-purple/20 text-admin-purple"
-                    : isManager
-                      ? "bg-manager-orange/10 border-manager-orange/20 text-manager-orange"
-                      : isTechnician
-                        ? "bg-technician-green/10 border-technician-green/20 text-technician-green"
-                        : "bg-employee-blue/10 border-employee-blue/20 text-employee-blue"
+                    : isDirector
+                      ? "bg-purple-50 border-purple-200 text-purple-700"
+                      : isGeneralManager
+                        ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                        : isGroupManager
+                          ? "bg-blue-50 border-blue-200 text-primary-blue"
+                          : isManager
+                            ? "bg-manager-orange/10 border-manager-orange/20 text-manager-orange"
+                            : isTechnician
+                              ? "bg-technician-green/10 border-technician-green/20 text-technician-green"
+                              : "bg-employee-blue/10 border-employee-blue/20 text-employee-blue"
                 )}>
-                  {isAdmin ? "Admin" : isManager ? "Manager" : isTechnician ? "Technician" : "Employee"}
+                  {roleTitle}
                 </div>
               </div>
             </div>
@@ -334,5 +408,3 @@ export default function Navbar() {
     </>
   );
 }
-
-

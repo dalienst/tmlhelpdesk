@@ -17,6 +17,10 @@ declare module "next-auth" {
             is_technician?: boolean;
             is_staff?: boolean;
             is_admin?: boolean;
+            is_director?: boolean;
+            is_general_manager?: boolean;
+            is_group_manager?: boolean;
+            managed_unit?: string | number | null;
             username?: string | null;
             token?: string | null;
         } & DefaultSession["user"];
@@ -35,6 +39,10 @@ declare module "next-auth" {
         is_technician?: boolean;
         is_staff?: boolean;
         is_admin?: boolean;
+        is_director?: boolean;
+        is_general_manager?: boolean;
+        is_group_manager?: boolean;
+        managed_unit?: string | number | null;
         username?: string | null;
         token?: string | null;
     }
