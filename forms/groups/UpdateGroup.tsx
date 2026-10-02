@@ -25,6 +25,7 @@ const validationSchema = Yup.object({
 export default function UpdateGroup({ group, onSuccess, onCancel }: UpdateGroupProps) {
   const { mutateAsync: updateGroup } = useUpdateGroup();
   const { data: employees, isLoading: employeesLoading } = useFetchEmployees();
+  const groupManagers = employees?.filter((emp) => emp.is_group_manager || emp.email === group.manager) || [];
 
   return (
     <div className="w-full">
@@ -116,15 +117,21 @@ export default function UpdateGroup({ group, onSuccess, onCancel }: UpdateGroupP
               >
                 <option value="">None (Unassigned)</option>
                 {employeesLoading ? (
-                  <option disabled>Loading staff directory...</option>
+                  <option disabled>Loading group managers...</option>
                 ) : (
-                  employees?.map((emp) => (
+                  groupManagers.map((emp) => (
                     <option key={emp.id || emp.email} value={emp.email}>
                       {emp.first_name} {emp.last_name} ({emp.email})
                     </option>
                   ))
                 )}
               </Field>
+
+              {!employeesLoading && groupManagers.length === 0 && (
+                <p className="text-[11px] text-amber-700 mt-1">
+                  No users currently have the <strong>Group Manager</strong> role. Assign it via the User Directory.
+                </p>
+              )}
               <ErrorMessage name="manager" component="div" className="text-primary-red text-xs mt-0.5" />
             </div>
 

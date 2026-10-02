@@ -22,6 +22,7 @@ const validationSchema = Yup.object({
 export default function CreateGroup({ onSuccess, onCancel }: CreateGroupProps) {
   const { mutateAsync: createGroup } = useCreateGroup();
   const { data: employees, isLoading: employeesLoading } = useFetchEmployees();
+  const groupManagers = employees?.filter((emp) => emp.is_group_manager) || [];
 
   return (
     <div className="w-full">
@@ -102,6 +103,7 @@ export default function CreateGroup({ onSuccess, onCancel }: CreateGroupProps) {
               <label htmlFor="manager" className="text-xs font-semibold text-gray-700">
                 Group Manager / Head of Group (Optional)
               </label>
+              {/* Filter only staff who have the Group Manager role */}
               <Field
                 as="select"
                 id="manager"
@@ -110,15 +112,24 @@ export default function CreateGroup({ onSuccess, onCancel }: CreateGroupProps) {
               >
                 <option value="">None (Unassigned)</option>
                 {employeesLoading ? (
-                  <option disabled>Loading staff directory...</option>
+                  <option disabled>Loading group managers...</option>
                 ) : (
-                  employees?.map((emp) => (
+                  groupManagers.map((emp) => (
                     <option key={emp.id || emp.email} value={emp.email}>
                       {emp.first_name} {emp.last_name} ({emp.email})
                     </option>
                   ))
                 )}
               </Field>
+
+              {!employeesLoading && groupManagers.length === 0 && (
+                <div className="p-2.5 bg-amber-50 rounded border border-amber-200 text-[11px] text-amber-800 flex items-start gap-1.5 mt-1">
+                  <ShieldAlert className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                  <span>
+                    No users currently have the <strong>Group Manager</strong> role. To assign a manager, first check &ldquo;Group Manager&rdquo; on an employee in the <a href="/admin/users" className="underline font-semibold" target="_blank">User Directory</a>.
+                  </span>
+                </div>
+              )}
               <p className="text-[11px] text-gray-400">
                 The Group Manager gains oversight over all departments linked to this group across properties.
               </p>

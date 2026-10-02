@@ -502,7 +502,7 @@ export default function PortalShell({ children }: { children: React.ReactNode })
         </header>
 
         {/* Page Content Body */}
-        <main className="flex-1 p-3 sm:p-5 lg:p-7 max-w-7xl w-full mx-auto animate-in fade-in duration-200">
+        <main className="flex-1 p-3 sm:p-5 lg:p-7 w-full animate-in fade-in duration-200">
           {children}
         </main>
 

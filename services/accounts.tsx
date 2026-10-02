@@ -22,6 +22,12 @@ export interface User {
     is_trainer: boolean;
     is_hod: boolean;
     is_hr: boolean;
+    is_director?: boolean;
+    is_general_manager?: boolean;
+    is_group_manager?: boolean;
+    managed_unit?: string | number | null;
+    managed_unit_name?: string | null;
+    managed_unit_code?: string | null;
     created_at: string;
     updated_at: string;
     deleted_at: string;
@@ -64,6 +70,10 @@ export interface CreateEmployeeByAdminPayload {
     is_hr?: boolean;
     is_technician?: boolean;
     is_admin?: boolean;
+    is_director?: boolean;
+    is_general_manager?: boolean;
+    is_group_manager?: boolean;
+    managed_unit?: string | number | null;
 }
 
 export interface CreateBulkEmployeeByAdminPayload {
@@ -84,6 +94,10 @@ export interface UpdateUserByAdminPayload {
     is_staff?: boolean;
     is_admin?: boolean;
     is_active?: boolean;
+    is_director?: boolean;
+    is_general_manager?: boolean;
+    is_group_manager?: boolean;
+    managed_unit?: string | number | null;
 }
 
 export interface resetMemberPassword {

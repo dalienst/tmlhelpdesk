@@ -23,6 +23,9 @@ import {
   Settings,
   User as UserIcon,
   Building2,
+  Compass,
+  Layers,
+  Crown,
   Filter,
   Sparkles,
 } from "lucide-react";
@@ -73,6 +76,9 @@ export default function AdminUsersPage() {
     const matchesRole =
       roleFilter === "ALL" ||
       (roleFilter === "ADMIN" && (user.is_admin || user.is_superuser)) ||
+      (roleFilter === "DIRECTOR" && user.is_director) ||
+      (roleFilter === "GENERAL_MANAGER" && user.is_general_manager) ||
+      (roleFilter === "GROUP_MANAGER" && user.is_group_manager) ||
       (roleFilter === "MANAGER" && user.is_manager) ||
       (roleFilter === "TECHNICIAN" && user.is_technician) ||
       (roleFilter === "EMPLOYEE" && user.is_employee) ||
@@ -300,6 +306,24 @@ export default function AdminUsersPage() {
                             <Shield className="w-2.5 h-2.5" /> Admin
                           </span>
                         )}
+                        {user.is_director && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                            <Crown className="w-2.5 h-2.5" /> Director
+                          </span>
+                        )}
+                        {user.is_general_manager && (
+                          <span
+                            className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200"
+                            title={user.managed_unit_name ? `Unit GM: ${user.managed_unit_name}` : "General Manager"}
+                          >
+                            <Compass className="w-2.5 h-2.5" /> GM {user.managed_unit_code ? `(${user.managed_unit_code})` : ""}
+                          </span>
+                        )}
+                        {user.is_group_manager && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                            <Layers className="w-2.5 h-2.5" /> Group Mgr
+                          </span>
+                        )}
                         {user.is_manager && (
                           <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-manager-orange/10 text-manager-orange border border-manager-orange/20">
                             <Briefcase className="w-2.5 h-2.5" /> Manager
@@ -320,7 +344,7 @@ export default function AdminUsersPage() {
                             HR
                           </span>
                         )}
-                        {user.is_employee && !user.is_admin && !user.is_manager && !user.is_technician && (
+                        {user.is_employee && !user.is_admin && !user.is_manager && !user.is_technician && !user.is_director && !user.is_general_manager && !user.is_group_manager && (
                           <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-employee-blue/10 text-employee-blue border border-employee-blue/20">
                             <UserIcon className="w-2.5 h-2.5" /> Employee
                           </span>
