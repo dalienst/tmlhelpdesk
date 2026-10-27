@@ -32,7 +32,8 @@ export default function GeneralManagerDashboard() {
 
   // Priority Escalations across unit
   const { data: escalatedTickets } = useFetchTickets({
-    status: "ESCALATED",
+    escalated: true,
+    status: "OPEN,IN_PROGRESS,PENDING",
   });
 
   return (

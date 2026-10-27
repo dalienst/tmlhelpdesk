@@ -9,7 +9,7 @@ import {
   createCategory as CreateCategoryPayload,
   updateCategory as UpdateCategoryPayload,
 } from "@/services/categories";
-import useAxiosAuth from "../authentication/useAxiosAuth";
+import useAxiosAuth, { hasToken } from "../authentication/useAxiosAuth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useFetchCategories(department?: string) {
@@ -18,7 +18,7 @@ export function useFetchCategories(department?: string) {
   return useQuery({
     queryKey: ["categories", department || "all"],
     queryFn: () => getCategories(headers, department),
-    enabled: !!headers,
+    enabled: hasToken(headers),
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
   });
@@ -30,7 +30,7 @@ export function useFetchCategory(reference: string) {
   return useQuery({
     queryKey: ["category", reference],
     queryFn: () => getCategory(reference, headers),
-    enabled: !!headers && !!reference,
+    enabled: hasToken(headers) && !!reference,
   });
 }
 

@@ -7,6 +7,7 @@ import { PaginatedResponse } from "./general";
 export interface Department {
   id: string;
   unit: string;
+  unit_id?: string;
   group?: string | null;
   group_name?: string | null;
   group_code?: string | null;

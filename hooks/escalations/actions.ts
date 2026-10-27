@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import useAxiosAuth from "../authentication/useAxiosAuth";
+import useAxiosAuth, { hasToken } from "../authentication/useAxiosAuth";
 import {
   getDepartmentEscalationRule,
   saveDepartmentEscalationRule,
@@ -14,7 +14,7 @@ export function useFetchDepartmentEscalationRule(departmentRef: string) {
   return useQuery({
     queryKey: ["escalation-rule", departmentRef],
     queryFn: () => getDepartmentEscalationRule(departmentRef, headers),
-    enabled: !!headers && !!headers.headers.Authorization && !!departmentRef,
+    enabled: hasToken(headers) && !!departmentRef,
   });
 }
 

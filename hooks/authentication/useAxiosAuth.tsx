@@ -16,13 +16,18 @@ function useAxiosAuth() {
 
   const tokens = session?.user?.token;
 
+  // Empty until the session has loaded, so queries never fire with "Token undefined"
   const authenticationHeader = {
     headers: {
-      Authorization: "Token " + tokens,
+      Authorization: tokens ? "Token " + tokens : "",
     },
   };
 
   return authenticationHeader;
+}
+
+export function hasToken(header?: { headers: { Authorization: string } }): boolean {
+  return Boolean(header?.headers?.Authorization);
 }
 
 export default useAxiosAuth;

@@ -5,7 +5,7 @@ import {
   createAttachmentRecord,
   createAttachment as CreateAttachmentPayload,
 } from "@/services/attachments";
-import useAxiosAuth from "../authentication/useAxiosAuth";
+import useAxiosAuth, { hasToken } from "../authentication/useAxiosAuth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useFetchAttachments(ticketRef?: string) {
@@ -14,7 +14,7 @@ export function useFetchAttachments(ticketRef?: string) {
   return useQuery({
     queryKey: ["attachments", ticketRef || ""],
     queryFn: () => getAttachments(ticketRef!, headers),
-    enabled: !!headers && !!ticketRef,
+    enabled: hasToken(headers) && !!ticketRef,
   });
 }
 
@@ -25,13 +25,10 @@ export function useCreateAttachment() {
   return useMutation({
     mutationFn: (data: CreateAttachmentPayload) =>
       createAttachmentRecord(data, headers),
-    onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["attachments", variables.ticket],
-      });
-      await queryClient.invalidateQueries({
-        queryKey: ["ticket", variables.ticket],
-      });
+    onSuccess: async () => {
+      // Queries are keyed by ticket reference, but the payload carries the id.
+      await queryClient.invalidateQueries({ queryKey: ["attachments"] });
+      await queryClient.invalidateQueries({ queryKey: ["ticket"] });
     },
   });
 }

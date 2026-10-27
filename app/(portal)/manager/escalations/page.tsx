@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { useFetchDepartments } from "@/hooks/departments/actions";
 import { useFetchDepartmentEscalationRule } from "@/hooks/escalations/actions";
 import ConfigureEscalationRule from "@/forms/escalations/ConfigureEscalationRule";
@@ -18,7 +19,23 @@ import {
 } from "lucide-react";
 
 export default function ManagerEscalationsPage() {
-  const { data: departments, isLoading: deptsLoading } = useFetchDepartments();
+  const { data: session } = useSession();
+  const { data: allDepartments, isLoading: deptsLoading } = useFetchDepartments();
+  const user = session?.user;
+
+  // Only departments this user may configure (mirrors the API's permission check).
+  const departments = allDepartments?.filter((d) => {
+    if (!user) return false;
+    if (user.is_admin || user.is_superuser || user.is_director) return true;
+    if (
+      user.is_general_manager &&
+      user.managed_unit &&
+      String(user.managed_unit) === String(d.unit_id)
+    ) {
+      return true;
+    }
+    return Boolean(user.email) && d.supervisor === user.email;
+  });
   const [selectedDeptRef, setSelectedDeptRef] = useState<string>("");
 
   const activeDept =

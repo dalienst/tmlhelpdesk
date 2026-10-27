@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Menu,
   X,
@@ -31,6 +32,8 @@ import {
   ChevronLeft,
 } from "lucide-react";
 
+import { primaryRole, ROLE_TITLES } from "@/lib/roles";
+
 function cn(...classes: (string | undefined | null | false)[]) {
   return classes.filter(Boolean).join(" ");
 }
@@ -38,6 +41,7 @@ function cn(...classes: (string | undefined | null | false)[]) {
 export default function PortalShell({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const pathname = usePathname();
+  const queryClient = useQueryClient();
 
   // Desktop sidebar open by default, closed by default on mobile
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -72,37 +76,9 @@ export default function PortalShell({ children }: { children: React.ReactNode })
   const isGroupManager = session?.user?.is_group_manager;
   const isManager = session?.user?.is_manager || session?.user?.is_hod;
   const isTechnician = session?.user?.is_technician;
-  const isEmployee = session?.user?.is_employee;
 
-  const rolePrefix = isAdmin
-    ? "admin"
-    : isDirector
-      ? "director"
-      : isGeneralManager
-        ? "gm"
-        : isGroupManager
-          ? "group-manager"
-          : isTechnician
-            ? "technician"
-            : isManager
-              ? "manager"
-              : isEmployee
-                ? "employee"
-                : "portal";
-
-  const roleTitle = isAdmin
-    ? "System Administrator"
-    : isDirector
-      ? "Executive Director"
-      : isGeneralManager
-        ? "General Manager"
-        : isGroupManager
-          ? "Group Operations Manager"
-          : isManager
-            ? "Department Manager"
-            : isTechnician
-              ? "Support Technician"
-              : "Staff Employee";
+  const rolePrefix = primaryRole(session?.user);
+  const roleTitle = ROLE_TITLES[rolePrefix];
 
   // Section 1: Core Navigation
   const coreNavItems = [
@@ -422,7 +398,11 @@ export default function PortalShell({ children }: { children: React.ReactNode })
         {/* Sidebar Footer */}
         <div className="p-3 border-t border-gray-100 bg-gray-50/50 shrink-0">
           <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={() => {
+              // Drop cached data so the next user in this browser never sees it
+              queryClient.clear();
+              signOut({ callbackUrl: "/login" });
+            }}
             className="w-full py-2 bg-primary-red/10 hover:bg-primary-red text-primary-red hover:text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all border border-primary-red/20 shadow-2xs group"
           >
             <LogOut className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />

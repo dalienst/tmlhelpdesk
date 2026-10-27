@@ -33,7 +33,9 @@ import {
 } from "lucide-react";
 import { useFetchTicket, useUpdateTicket } from "@/hooks/tickets/actions";
 import { useFetchEmployees } from "@/hooks/accounts/actions";
-import { useFetchAttachments } from "@/hooks/attachments/actions";
+import { useFetchAttachments, useCreateAttachment } from "@/hooks/attachments/actions";
+import { primaryRole } from "@/lib/roles";
+import type { PendingReason, EscalationReason } from "@/services/tickets";
 import toast from "react-hot-toast";
 
 export default function TicketWorkspacePage() {
@@ -46,6 +48,7 @@ export default function TicketWorkspacePage() {
   const { mutateAsync: updateTicketMutation, isPending: isUpdating } = useUpdateTicket();
   const { data: staffMembers } = useFetchEmployees();
   const { data: attachmentsList, refetch: refetchAttachments } = useFetchAttachments(ticket?.reference);
+  const { mutateAsync: createAttachmentMutation } = useCreateAttachment();
   const [isUploadingAttachment, setIsUploadingAttachment] = useState(false);
 
   // Form edit states
@@ -72,26 +75,28 @@ export default function TicketWorkspacePage() {
       setAssignedTo(ticket.assigned_to_email || "");
       setPriority(ticket.priority || "MEDIUM");
       setResolutionNotes(ticket.resolution_notes || "");
+      setPendingReason(ticket.pending_reason || "WAITING_PARTS");
+      setPendingDetails(ticket.pending_details || "");
+      setExpectedResumeDate(ticket.expected_resume_date || "");
     }
   }, [ticket]);
 
   const isAdmin = Boolean(session?.user?.is_admin || session?.user?.is_superuser);
-  const isManager = Boolean(session?.user?.is_manager);
+  const isManager = Boolean(session?.user?.is_manager || session?.user?.is_hod);
+  const isLeadership = Boolean(
+    session?.user?.is_director ||
+      session?.user?.is_general_manager ||
+      session?.user?.is_group_manager
+  );
   const isTechnician = Boolean(session?.user?.is_technician);
   const isEmployee = Boolean(session?.user?.is_employee);
 
-  const rolePrefix = isAdmin
-    ? "admin"
-    : isTechnician
-      ? "technician"
-      : isManager
-        ? "manager"
-        : "employee";
+  const rolePrefix = primaryRole(session?.user);
 
   // Check if current user can manage lifecycle
-  const canManage = isAdmin || isManager || isTechnician;
+  const canManage = isAdmin || isLeadership || isManager || isTechnician;
   // Check if current user can reassign
-  const canReassign = isAdmin || isManager;
+  const canReassign = isAdmin || isLeadership || isManager;
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "-";
@@ -197,25 +202,18 @@ export default function TicketWorkspacePage() {
     if (!ticket) return;
 
     try {
-      let finalResolutionNotes = resolutionNotes;
-      if (status === "PENDING") {
-        const pendingNote = `[HOLD REASON]: ${pendingReason} - ${pendingDetails || "No additional remarks"} ${
-          expectedResumeDate ? `(Expected Resume: ${expectedResumeDate})` : ""
-        }`;
-        finalResolutionNotes = finalResolutionNotes
-          ? `${finalResolutionNotes}
-
-${pendingNote}`
-          : pendingNote;
-      }
+      const isPending = status === "PENDING";
 
       await updateTicketMutation({
         reference: ticket.reference,
         data: {
           status: status as any,
           assigned_to: canReassign ? (assignedTo ? assignedTo : null) : undefined,
-          priority: priority as any,
-          resolution_notes: finalResolutionNotes || undefined,
+          priority: canReassign ? (priority as any) : undefined,
+          resolution_notes: resolutionNotes || undefined,
+          pending_reason: isPending ? (pendingReason as PendingReason) : undefined,
+          pending_details: isPending ? pendingDetails || null : undefined,
+          expected_resume_date: isPending ? expectedResumeDate || null : undefined,
         },
       });
 
@@ -233,20 +231,13 @@ ${pendingNote}`
     if (!ticket) return;
     setIsEscalating(true);
     try {
-      const escalationNote = `[ESCALATION INITIATED by ${session?.user?.name || "Staff"}]: Reason: ${escalationReason}. Details: ${
-        escalationNotes || "Immediate supervisor intervention requested."
-      }`;
-      const updatedNotes = ticket.resolution_notes
-        ? `${ticket.resolution_notes}
-
-${escalationNote}`
-        : escalationNote;
-
       await updateTicketMutation({
         reference: ticket.reference,
         data: {
-          priority: "CRITICAL",
-          resolution_notes: updatedNotes,
+          is_escalated: true,
+          escalation_reason: escalationReason as EscalationReason,
+          escalation_notes:
+            escalationNotes || "Immediate supervisor intervention requested.",
         },
       });
 
@@ -294,24 +285,23 @@ ${escalationNote}`
       if (!uploadedFile) throw new Error("Upload did not return file details");
 
       // Save attachment in backend
-      await fetch("/api/v1/attachments/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ticket: ticket.id,
-          file_url: uploadedFile.url,
-          file_name: uploadedFile.name,
-          file_size: uploadedFile.size,
-          file_type: uploadedFile.type,
-          attachment_type: attachmentType,
-        }),
+      await createAttachmentMutation({
+        ticket: ticket.id,
+        file_url: uploadedFile.url,
+        file_name: uploadedFile.name,
+        file_size: uploadedFile.size,
+        file_type: uploadedFile.type,
+        attachment_type: attachmentType,
       });
 
       await refetchAttachments();
       await refetch();
       toast.success(`${attachmentType === "FULFILLMENT_ATTACHMENT" ? "Resolution deliverable / proof of work" : "Supporting file"} attached successfully!`, { id: toastId });
     } catch (err: any) {
-      toast.error(err?.message || "Failed to attach file. Please try again.", { id: toastId });
+      toast.error(
+        err?.response?.data?.detail || err?.message || "Failed to attach file. Please try again.",
+        { id: toastId }
+      );
     } finally {
       setIsUploadingAttachment(false);
       e.target.value = "";

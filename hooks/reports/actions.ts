@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import useAxiosAuth from "../authentication/useAxiosAuth";
+import useAxiosAuth, { hasToken } from "../authentication/useAxiosAuth";
 import {
   getAnalytics,
   AnalyticsQueryParams,
@@ -23,7 +23,7 @@ export function useFetchAnalytics(params?: AnalyticsQueryParams) {
       params?.status || "ALL",
     ],
     queryFn: () => getAnalytics(headers, params),
-    enabled: !!headers && !!headers.headers.Authorization,
+    enabled: hasToken(headers),
     staleTime: 60 * 1000,
   });
 }

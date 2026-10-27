@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import useAxiosAuth from "../authentication/useAxiosAuth";
+import useAxiosAuth, { hasToken } from "../authentication/useAxiosAuth";
 import {
   getGroups,
   getGroup,
@@ -18,7 +18,7 @@ export function useFetchGroups(params?: { search?: string; my_groups?: boolean }
   return useQuery({
     queryKey: ["groups", params?.search || "", params?.my_groups ? "mine" : "all"],
     queryFn: () => getGroups(headers, params),
-    enabled: !!headers && !!headers.headers.Authorization,
+    enabled: hasToken(headers),
   });
 }
 
@@ -28,7 +28,7 @@ export function useFetchGroup(reference: string) {
   return useQuery({
     queryKey: ["group", reference],
     queryFn: () => getGroup(reference, headers),
-    enabled: !!headers && !!headers.headers.Authorization && !!reference,
+    enabled: hasToken(headers) && !!reference,
   });
 }
 

@@ -27,6 +27,8 @@ import {
   Paperclip,
 } from "lucide-react";
 import { useCreateTicket } from "@/hooks/tickets/actions";
+import { useCreateAttachment } from "@/hooks/attachments/actions";
+import { primaryRole } from "@/lib/roles";
 import { useFetchUnits } from "@/hooks/units/actions";
 import { useFetchDepartments } from "@/hooks/departments/actions";
 import { useFetchCategories } from "@/hooks/categories/actions";
@@ -45,6 +47,7 @@ export default function NewTicketPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const { mutateAsync: createTicketMutation, isPending: isSubmitting } = useCreateTicket();
+  const { mutateAsync: createAttachmentMutation } = useCreateAttachment();
 
   const { data: units, isLoading: unitsLoading } = useFetchUnits();
   const { data: departments, isLoading: deptsLoading } = useFetchDepartments();
@@ -108,13 +111,7 @@ export default function NewTicketPage() {
     setAttachedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const rolePrefix = session?.user?.is_admin
-    ? "admin"
-    : session?.user?.is_technician
-      ? "technician"
-      : session?.user?.is_manager
-        ? "manager"
-        : "employee";
+  const rolePrefix = primaryRole(session?.user);
 
   const handleSubmit = async (values: any) => {
     try {
@@ -153,25 +150,28 @@ export default function NewTicketPage() {
       const newTicket = await createTicketMutation(payload);
 
       // Step 3: Create attachment records in backend for each uploaded file
+      let failedAttachments = 0;
       if (uploadedFilesMeta.length > 0 && newTicket?.id) {
         for (const meta of uploadedFilesMeta) {
           try {
-            await fetch("/api/v1/attachments/", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                ticket: newTicket.id,
-                file_url: meta.url,
-                file_name: meta.name,
-                file_size: meta.size,
-                file_type: meta.type,
-                attachment_type: "REQUEST_ATTACHMENT",
-              }),
+            await createAttachmentMutation({
+              ticket: newTicket.id,
+              file_url: meta.url,
+              file_name: meta.name,
+              file_size: meta.size,
+              file_type: meta.type,
+              attachment_type: "REQUEST_ATTACHMENT",
             });
           } catch (e) {
+            failedAttachments += 1;
             console.error("Failed to link attachment:", e);
           }
         }
+      }
+      if (failedAttachments > 0) {
+        toast.error(
+          `${failedAttachments} attachment(s) could not be linked. You can re-attach them from the ticket page.`
+        );
       }
 
       toast.success(

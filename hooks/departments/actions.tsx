@@ -10,7 +10,7 @@ import {
   createDepartment as CreateDepartmentPayload,
   updateDepartment as UpdateDepartmentPayload,
 } from "@/services/departments";
-import useAxiosAuth from "../authentication/useAxiosAuth";
+import useAxiosAuth, { hasToken } from "../authentication/useAxiosAuth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useFetchDepartments(unit?: string) {
@@ -19,7 +19,7 @@ export function useFetchDepartments(unit?: string) {
   return useQuery({
     queryKey: ["departments", unit || "all"],
     queryFn: () => getDepartments(headers, unit),
-    enabled: !!headers,
+    enabled: hasToken(headers),
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
   });
@@ -31,7 +31,7 @@ export function useFetchDepartment(reference: string) {
   return useQuery({
     queryKey: ["department", reference],
     queryFn: () => getDepartment(reference, headers),
-    enabled: !!headers && !!reference,
+    enabled: hasToken(headers) && !!reference,
   });
 }
 

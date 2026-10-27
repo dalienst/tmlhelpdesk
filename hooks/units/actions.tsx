@@ -10,7 +10,7 @@ import {
   createUnit as CreateUnitPayload,
   updateUnit as UpdateUnitPayload,
 } from "@/services/units";
-import useAxiosAuth from "../authentication/useAxiosAuth";
+import useAxiosAuth, { hasToken } from "../authentication/useAxiosAuth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useFetchUnits() {
@@ -19,7 +19,7 @@ export function useFetchUnits() {
   return useQuery({
     queryKey: ["units"],
     queryFn: () => getUnits(headers),
-    enabled: !!headers,
+    enabled: hasToken(headers),
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
   });
@@ -31,7 +31,7 @@ export function useFetchUnit(reference: string) {
   return useQuery({
     queryKey: ["unit", reference],
     queryFn: () => getUnit(reference, headers),
-    enabled: !!headers && !!reference,
+    enabled: hasToken(headers) && !!reference,
   });
 }
 

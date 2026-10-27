@@ -35,10 +35,38 @@ export interface Ticket {
   resolution_notes?: string;
   resolved_at?: string;
   closed_at?: string;
+  // Waiting flow
+  pending_reason?: PendingReason | "" | null;
+  pending_details?: string | null;
+  expected_resume_date?: string | null;
+  sla_paused_at?: string | null;
+  sla_total_paused_seconds?: number;
+  // Escalation
+  is_escalated?: boolean;
+  escalated_at?: string | null;
+  escalated_by_name?: string | null;
+  escalation_reason?: EscalationReason | "" | null;
+  escalation_notes?: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
 }
+
+// Must match tickets/constants.py in the API
+export type PendingReason =
+  | "WAITING_PARTS"
+  | "WAITING_USER"
+  | "WAITING_VENDOR"
+  | "WAITING_APPROVAL"
+  | "SCHEDULED_WINDOW"
+  | "OTHER";
+
+export type EscalationReason =
+  | "TECHNICAL_SCOPE"
+  | "BUDGET_APPROVAL"
+  | "VENDOR_DISPUTE"
+  | "SLA_BREACH_RISK"
+  | "CRITICAL_OUTAGE";
 
 export interface createTicket {
   unit?: string;
@@ -57,6 +85,12 @@ export interface updateTicket {
   resolution_notes?: string;
   subject?: string;
   description?: string;
+  pending_reason?: PendingReason | "" | null;
+  pending_details?: string | null;
+  expected_resume_date?: string | null;
+  is_escalated?: boolean;
+  escalation_reason?: EscalationReason;
+  escalation_notes?: string;
 }
 
 export interface TicketQueryParams {
@@ -68,6 +102,7 @@ export interface TicketQueryParams {
   issue?: string;
   my_tickets?: boolean;
   my_assigned?: boolean;
+  escalated?: boolean;
   search?: string;
 }
 
@@ -84,6 +119,7 @@ export const getTickets = async (
   if (params?.issue) query.append("issue", params.issue);
   if (params?.my_tickets) query.append("my_tickets", "true");
   if (params?.my_assigned) query.append("my_assigned", "true");
+  if (params?.escalated) query.append("escalated", "true");
   if (params?.search) query.append("search", params.search);
 
   const queryString = query.toString();

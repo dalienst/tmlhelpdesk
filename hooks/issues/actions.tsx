@@ -10,7 +10,7 @@ import {
   createIssue as CreateIssuePayload,
   updateIssue as UpdateIssuePayload,
 } from "@/services/issues";
-import useAxiosAuth from "../authentication/useAxiosAuth";
+import useAxiosAuth, { hasToken } from "../authentication/useAxiosAuth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useFetchIssues(params?: IssueQueryParams) {
@@ -25,7 +25,7 @@ export function useFetchIssues(params?: IssueQueryParams) {
       params?.my_issues ? "my_i" : "",
     ],
     queryFn: () => getIssues(headers, params),
-    enabled: !!headers,
+    enabled: hasToken(headers),
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
   });
@@ -37,7 +37,7 @@ export function useFetchIssue(reference: string) {
   return useQuery({
     queryKey: ["issue", reference],
     queryFn: () => getIssue(reference, headers),
-    enabled: !!headers && !!reference,
+    enabled: hasToken(headers) && !!reference,
   });
 }
 

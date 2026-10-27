@@ -14,7 +14,7 @@ import {
     UpdateUserByAdminPayload
 } from "@/services/accounts";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import useAxiosAuth from "../authentication/useAxiosAuth";
+import useAxiosAuth, { hasToken } from "../authentication/useAxiosAuth";
 import useUserId from "../authentication/useUserId";
 
 export function useFetchAccount() {
@@ -24,7 +24,7 @@ export function useFetchAccount() {
     return useQuery({
         queryKey: ["account", userId],
         queryFn: () => getAccount(userId as string, token),
-        enabled: !!userId,
+        enabled: !!userId && hasToken(token),
     });
 }
 
@@ -36,7 +36,7 @@ export function useFetchEmployees() {
     return useQuery({
         queryKey: ["employees"],
         queryFn: () => getEmployees(token),
-        enabled: !!token,
+        enabled: hasToken(token),
         staleTime: 5 * 60 * 1000,
         gcTime: 30 * 60 * 1000,
     });
@@ -48,7 +48,7 @@ export function useFetchEmployee(reference: string) {
     return useQuery({
         queryKey: ["employee", reference],
         queryFn: () => getEmployee(reference, token),
-        enabled: !!token && !!reference,
+        enabled: hasToken(token) && !!reference,
     });
 }
 
