@@ -2,6 +2,16 @@ import { NextAuthOptions, Session, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { JWT } from "next-auth/jwt";
 
+// Keep in step with TOKEN_TTL_HOURS on the API (default 12 hours)
+const SESSION_MAX_AGE_HOURS = Number(process.env.SESSION_MAX_AGE_HOURS || 12);
+
+// The session ends at the API token's expiry, or after SESSION_MAX_AGE_HOURS
+function sessionExpiry(user: User): number {
+  const fromApi = user.token_expires_at ? Date.parse(user.token_expires_at) : NaN;
+  const fallback = Date.now() + SESSION_MAX_AGE_HOURS * 60 * 60 * 1000;
+  return Number.isNaN(fromApi) ? fallback : Math.min(fromApi, fallback);
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -41,12 +51,23 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }: { token: JWT; user: User }) {
-      return { ...token, ...user };
+      if (user) {
+        return { ...token, ...user, expiresAt: sessionExpiry(user) };
+      }
+      // Past expiry: drop the API token so every page treats the user as signed out
+      if (typeof token.expiresAt === "number" && Date.now() >= token.expiresAt) {
+        return { expiresAt: token.expiresAt, error: "SessionExpired" } as JWT;
+      }
+      return token;
     },
     async session({ session, token }: { session: Session; token: JWT }) {
       session.user = token;
       return session;
     },
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: SESSION_MAX_AGE_HOURS * 60 * 60,
   },
   pages: { signIn: "/login" },
 };

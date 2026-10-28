@@ -109,7 +109,7 @@ export default function ConfigureEscalationRule({
                 </span>
               </div>
               <p className="text-[11px] text-gray-500">
-                Notifies assigned technicians and supervisor when a ticket reaches this fraction of resolution SLA before breaching.
+                Emails the assigned technician once when a ticket has used this share of its SLA. Time on hold does not count.
               </p>
               <Field
                 type="range"
@@ -145,7 +145,7 @@ export default function ConfigureEscalationRule({
                   Auto-Escalate to Department Head on Breach
                 </label>
                 <p className="text-[11px] text-gray-500 mt-0.5">
-                  When the SLA timer expires, immediately elevate ticket status to ESCALATED and notify the HOD.
+                  When the SLA runs out, the ticket is escalated automatically, set to Critical, and the HOD (plus the recipients below) is emailed.
                 </p>
               </div>
             </div>
@@ -157,7 +157,7 @@ export default function ConfigureEscalationRule({
                 className="text-xs font-semibold text-gray-800 flex items-center gap-1.5"
               >
                 <Clock className="w-3.5 h-3.5 text-primary-blue" />
-                Escalate to General Manager (Hours Unresolved After Breach)
+                Escalate to General Manager (Hours Unresolved After Escalation)
               </label>
               <div className="flex items-center gap-2">
                 <Field
@@ -168,10 +168,10 @@ export default function ConfigureEscalationRule({
                   max="168"
                   className="w-24 bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded px-3 py-1.5 text-sm outline-none"
                 />
-                <span className="text-xs text-gray-500">hours after SLA breach</span>
+                <span className="text-xs text-gray-500">hours after escalation</span>
               </div>
               <p className="text-[11px] text-gray-500">
-                Set to 0 to disable automated General Manager notification.
+                Applies to manual and automatic escalations. The unit GM (or the group manager if the unit has none) is emailed once. Set to 0 to turn this off.
               </p>
               <ErrorMessage
                 name="escalate_to_gm_after_hours"
@@ -198,7 +198,7 @@ export default function ConfigureEscalationRule({
                   Immediate High / Critical Priority Alert
                 </label>
                 <p className="text-[11px] text-gray-500 mt-0.5">
-                  Sends instant notifications to the entire management chain whenever a Critical ticket is created.
+                  Emails the HOD (plus the recipients below) as soon as a Critical priority ticket is raised.
                 </p>
               </div>
             </div>
@@ -219,7 +219,7 @@ export default function ConfigureEscalationRule({
                 className="w-full bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded px-3 py-2 text-sm outline-none placeholder:text-gray-400"
               />
               <p className="text-[11px] text-gray-400">
-                Comma-separated email addresses to receive all escalation digests.
+                Comma-separated addresses copied on escalation, GM and critical alerts.
               </p>
               <ErrorMessage
                 name="notify_emails_str"

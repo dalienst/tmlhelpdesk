@@ -10,9 +10,15 @@ export async function proxy(request: NextRequest) {
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
   const { pathname, search } = request.nextUrl;
 
-  if (!token) {
+  const expired =
+    !!token &&
+    (token.error === "SessionExpired" ||
+      (typeof token.expiresAt === "number" && Date.now() >= token.expiresAt));
+
+  if (!token || expired) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname + search);
+    if (expired) loginUrl.searchParams.set("expired", "1");
     return NextResponse.redirect(loginUrl);
   }
 

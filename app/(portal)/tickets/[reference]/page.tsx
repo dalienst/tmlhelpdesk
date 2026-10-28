@@ -35,6 +35,7 @@ import { useFetchTicket, useUpdateTicket } from "@/hooks/tickets/actions";
 import { useFetchEmployees } from "@/hooks/accounts/actions";
 import { useFetchAttachments, useCreateAttachment } from "@/hooks/attachments/actions";
 import { primaryRole } from "@/lib/roles";
+import { ESCALATION_REASON_LABELS } from "@/services/tickets";
 import type { PendingReason, EscalationReason } from "@/services/tickets";
 import toast from "react-hot-toast";
 
@@ -378,6 +379,12 @@ export default function TicketWorkspacePage() {
             </div>
             <p className="text-xs text-gray-500 mt-1">
               Created {formatDate(ticket.created_at)} • Target SLA: {ticket.sla_hours} Hours Turnaround
+              {ticket.sla_due_at && !["RESOLVED", "CLOSED", "CANCELLED"].includes(ticket.status) && (
+                <>
+                  {" "}• {ticket.status === "PENDING" ? "SLA paused (on hold)" : `Due ${formatDate(ticket.sla_due_at)}`}
+                  {ticket.sla_breached_at && <span className="text-primary-red font-semibold"> • SLA breached</span>}
+                </>
+              )}
             </p>
           </div>
 
@@ -417,6 +424,17 @@ export default function TicketWorkspacePage() {
         <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100 text-xs">
           <div>{getStatusBadge(ticket.status)}</div>
           <div>{getPriorityBadge(ticket.priority)}</div>
+
+          {ticket.is_escalated && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-50 border border-red-200 text-red-700 text-[11px] font-semibold">
+              <ShieldAlert className="w-3 h-3" />
+              Escalated
+              {ticket.escalation_reason
+                ? `: ${ESCALATION_REASON_LABELS[ticket.escalation_reason as EscalationReason] ?? ticket.escalation_reason}`
+                : ""}
+              {ticket.escalated_by_name ? ` by ${ticket.escalated_by_name}` : ""}
+            </span>
+          )}
 
           {ticket.unit_name && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-gray-50 border border-gray-200 text-gray-600 text-[11px] font-medium">

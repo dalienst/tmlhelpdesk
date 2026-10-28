@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Menu,
@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 
 import { primaryRole, ROLE_TITLES } from "@/lib/roles";
+import { endSession } from "@/lib/session";
 
 function cn(...classes: (string | undefined | null | false)[]) {
   return classes.filter(Boolean).join(" ");
@@ -398,11 +399,7 @@ export default function PortalShell({ children }: { children: React.ReactNode })
         {/* Sidebar Footer */}
         <div className="p-3 border-t border-gray-100 bg-gray-50/50 shrink-0">
           <button
-            onClick={() => {
-              // Drop cached data so the next user in this browser never sees it
-              queryClient.clear();
-              signOut({ callbackUrl: "/login" });
-            }}
+            onClick={() => endSession(queryClient, { token: session?.user?.token })}
             className="w-full py-2 bg-primary-red/10 hover:bg-primary-red text-primary-red hover:text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all border border-primary-red/20 shadow-2xs group"
           >
             <LogOut className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />

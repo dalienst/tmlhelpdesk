@@ -30,7 +30,7 @@ export default function ManagerEscalationsPage() {
     if (
       user.is_general_manager &&
       user.managed_unit &&
-      String(user.managed_unit) === String(d.unit_id)
+      String(user.managed_unit) === String(d.unit_reference)
     ) {
       return true;
     }

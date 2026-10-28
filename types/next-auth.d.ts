@@ -23,6 +23,9 @@ declare module "next-auth" {
             managed_unit?: string | number | null;
             username?: string | null;
             token?: string | null;
+            token_expires_at?: string | null;
+            expiresAt?: number;
+            error?: string;
         } & DefaultSession["user"];
     }
 
@@ -44,6 +47,15 @@ declare module "next-auth" {
         is_group_manager?: boolean;
         managed_unit?: string | number | null;
         username?: string | null;
+        token?: string | null;
+        token_expires_at?: string | null;
+    }
+}
+
+declare module "next-auth/jwt" {
+    interface JWT {
+        expiresAt?: number;
+        error?: string;
         token?: string | null;
     }
 }

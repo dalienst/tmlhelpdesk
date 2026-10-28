@@ -47,6 +47,11 @@ export interface Ticket {
   escalated_by_name?: string | null;
   escalation_reason?: EscalationReason | "" | null;
   escalation_notes?: string | null;
+  // Automatic escalation
+  sla_due_at?: string | null;
+  sla_warning_sent_at?: string | null;
+  sla_breached_at?: string | null;
+  gm_alerted_at?: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -66,7 +71,17 @@ export type EscalationReason =
   | "BUDGET_APPROVAL"
   | "VENDOR_DISPUTE"
   | "SLA_BREACH_RISK"
-  | "CRITICAL_OUTAGE";
+  | "CRITICAL_OUTAGE"
+  | "SLA_BREACHED"; // set by the automatic escalation engine only
+
+export const ESCALATION_REASON_LABELS: Record<EscalationReason, string> = {
+  TECHNICAL_SCOPE: "Exceeds technical scope",
+  BUDGET_APPROVAL: "Needs management sign-off / budget",
+  VENDOR_DISPUTE: "Vendor delay",
+  SLA_BREACH_RISK: "High risk of SLA breach",
+  CRITICAL_OUTAGE: "Critical service outage",
+  SLA_BREACHED: "SLA breached (automatic)",
+};
 
 export interface createTicket {
   unit?: string;

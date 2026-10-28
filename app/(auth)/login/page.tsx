@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { getSession, signIn } from "next-auth/react";
 import Link from "next/link";
@@ -27,6 +27,13 @@ interface CustomSession extends Session {
 
 export default function Login() {
   const [loading, setLoading] = useState<boolean>(false);
+
+  // Sent here by an expired session: say why, once
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("expired") === "1") {
+      toast("Your session has expired. Please sign in again.", { id: "session-expired" });
+    }
+  }, []);
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const router = useRouter();
