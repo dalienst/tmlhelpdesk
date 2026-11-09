@@ -1,10 +1,22 @@
 "use client";
 
 import { updateUserByAdmin, User } from "@/services/accounts";
-import { Formik, Form, Field } from "formik";
+import { useFetchUnits } from "@/hooks/units/actions";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { Loader2, Shield, Briefcase, Settings, User as UserIcon, Building2, Users } from "lucide-react";
+import {
+  Loader2,
+  Shield,
+  Briefcase,
+  Settings,
+  User as UserIcon,
+  Building2,
+  Users,
+  Compass,
+  Layers,
+  Crown,
+} from "lucide-react";
 import useAxiosAuth from "@/hooks/authentication/useAxiosAuth";
 
 interface UpdateUserProps {
@@ -16,6 +28,8 @@ interface UpdateUserProps {
 export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProps) {
   const axios = useAxiosAuth();
   const queryClient = useQueryClient();
+  const { data: units, isLoading: unitsLoading } = useFetchUnits();
+  const activeUnits = units?.filter((u) => u.is_active) || [];
 
   const initialValues = {
     is_active: !!user.is_active,
@@ -25,6 +39,10 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
     is_technician: !!user.is_technician,
     is_hr: !!user.is_hr,
     is_hod: !!user.is_hod,
+    is_group_manager: !!user.is_group_manager,
+    is_general_manager: !!user.is_general_manager,
+    is_director: !!user.is_director,
+    managed_unit: (user.managed_unit as string) || "",
   };
 
   return (
@@ -32,7 +50,7 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-gray-900 tracking-tight">Manage User</h2>
         <p className="text-xs text-gray-500 mt-0.5">
-          Update roles and account status for {user.first_name} {user.last_name}
+          Update roles, leadership designations, and account status for {user.first_name} {user.last_name}
         </p>
       </div>
 
@@ -42,7 +60,7 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
         </div>
         <div>
           <p className="text-sm font-semibold text-gray-900">{user.first_name} {user.last_name}</p>
-          <p className="text-xs text-gray-500">{user.email}</p>
+          <p className="text-xs text-gray-500">{user.email} &bull; Payroll: <span className="font-mono">{user.payroll_no || "N/A"}</span></p>
         </div>
       </div>
 
@@ -58,6 +76,15 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
             if (Boolean(values.is_technician) !== initialValues.is_technician) payload.is_technician = Boolean(values.is_technician);
             if (Boolean(values.is_hr) !== initialValues.is_hr) payload.is_hr = Boolean(values.is_hr);
             if (Boolean(values.is_hod) !== initialValues.is_hod) payload.is_hod = Boolean(values.is_hod);
+            if (Boolean(values.is_group_manager) !== initialValues.is_group_manager) payload.is_group_manager = Boolean(values.is_group_manager);
+            if (Boolean(values.is_general_manager) !== initialValues.is_general_manager) payload.is_general_manager = Boolean(values.is_general_manager);
+            if (Boolean(values.is_director) !== initialValues.is_director) payload.is_director = Boolean(values.is_director);
+
+            // Handle managed unit logic
+            const resolvedUnit = values.is_general_manager && values.managed_unit ? values.managed_unit : null;
+            if (resolvedUnit !== (initialValues.managed_unit || null)) {
+              payload.managed_unit = resolvedUnit;
+            }
 
             if (Object.keys(payload).length === 0) {
               toast.success("No changes made.");
@@ -94,10 +121,10 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
               </label>
             </div>
 
-            {/* Roles */}
+            {/* Standard Roles & Permissions */}
             <div>
               <div className="flex items-center justify-between mb-2 border-b border-gray-100 pb-1.5">
-                <h3 className="text-xs font-semibold text-gray-900">Roles & Permissions</h3>
+                <h3 className="text-xs font-semibold text-gray-900">Standard Roles & Permissions</h3>
                 <span className="text-[11px] text-gray-400">Select all that apply</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -123,17 +150,8 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
                 <label className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded border border-gray-200 hover:border-manager-orange/30 hover:bg-manager-orange/5 transition-all">
                   <Field type="checkbox" name="is_manager" className="mt-0.5 w-3.5 h-3.5 text-manager-orange rounded border-gray-300 focus:ring-manager-orange" />
                   <div>
-                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Briefcase className="w-3.5 h-3.5 text-manager-orange" /> Manager</p>
-                    <p className="text-[11px] text-gray-500">Department oversight</p>
-                  </div>
-                </label>
-
-                {/* Admin */}
-                <label className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded border border-gray-200 hover:border-admin-purple/30 hover:bg-admin-purple/5 transition-all">
-                  <Field type="checkbox" name="is_admin" className="mt-0.5 w-3.5 h-3.5 text-admin-purple rounded border-gray-300 focus:ring-admin-purple" />
-                  <div>
-                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-admin-purple" /> Admin</p>
-                    <p className="text-[11px] text-gray-500">Full system access</p>
+                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Briefcase className="w-3.5 h-3.5 text-manager-orange" /> Department Manager</p>
+                    <p className="text-[11px] text-gray-500">Department team oversight</p>
                   </div>
                 </label>
 
@@ -147,14 +165,93 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
                 </label>
 
                 {/* HR */}
-                <label className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded border border-gray-200 hover:border-staff-yellow/40 hover:bg-staff-yellow/5 transition-all">
+                <label className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded border border-gray-200 hover:border-amber-200 hover:bg-amber-50/40 transition-all">
                   <Field type="checkbox" name="is_hr" className="mt-0.5 w-3.5 h-3.5 text-amber-600 rounded border-gray-300 focus:ring-amber-500" />
                   <div>
-                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-amber-600" /> HR</p>
-                    <p className="text-[11px] text-gray-500">Human resources personnel</p>
+                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-amber-600" /> HR Personnel</p>
+                    <p className="text-[11px] text-gray-500">Human resources management</p>
+                  </div>
+                </label>
+
+                {/* Admin */}
+                <label className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded border border-gray-200 hover:border-admin-purple/30 hover:bg-admin-purple/5 transition-all">
+                  <Field type="checkbox" name="is_admin" className="mt-0.5 w-3.5 h-3.5 text-admin-purple rounded border-gray-300 focus:ring-admin-purple" />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-admin-purple" /> Administrator</p>
+                    <p className="text-[11px] text-gray-500">Full system access</p>
                   </div>
                 </label>
               </div>
+            </div>
+
+            {/* Executive & Leadership Roles */}
+            <div>
+              <div className="flex items-center justify-between mb-2 border-b border-gray-100 pb-1.5">
+                <h3 className="text-xs font-semibold text-gray-900">Executive & Leadership Roles</h3>
+                <span className="text-[11px] text-gray-400">Escalation hierarchy & governance</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {/* Group Operations Manager */}
+                <label className={`flex items-start gap-2.5 cursor-pointer p-2.5 rounded border transition-all ${
+                  values.is_group_manager ? 'border-indigo-400 bg-indigo-50/50 shadow-xs' : 'border-gray-200 hover:border-indigo-200 hover:bg-indigo-50/20'
+                }`}>
+                  <Field type="checkbox" name="is_group_manager" className="mt-0.5 w-3.5 h-3.5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Layers className="w-3.5 h-3.5 text-indigo-600" /> Group Manager</p>
+                    <p className="text-[11px] text-gray-500">Cross-branch functional group management</p>
+                  </div>
+                </label>
+
+                {/* Unit General Manager */}
+                <label className={`flex items-start gap-2.5 cursor-pointer p-2.5 rounded border transition-all ${
+                  values.is_general_manager ? 'border-teal-400 bg-teal-50/50 shadow-xs' : 'border-gray-200 hover:border-teal-200 hover:bg-teal-50/20'
+                }`}>
+                  <Field type="checkbox" name="is_general_manager" className="mt-0.5 w-3.5 h-3.5 text-teal-600 rounded border-gray-300 focus:ring-teal-500" />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Compass className="w-3.5 h-3.5 text-teal-600" /> General Manager</p>
+                    <p className="text-[11px] text-gray-500">Unit/Property-level executive oversight</p>
+                  </div>
+                </label>
+
+                {/* Executive Director */}
+                <label className={`flex items-start gap-2.5 cursor-pointer p-2.5 rounded border transition-all ${
+                  values.is_director ? 'border-purple-400 bg-purple-50/50 shadow-xs' : 'border-gray-200 hover:border-purple-200 hover:bg-purple-50/20'
+                }`}>
+                  <Field type="checkbox" name="is_director" className="mt-0.5 w-3.5 h-3.5 text-purple-700 rounded border-gray-300 focus:ring-purple-600" />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900 flex items-center gap-1.5"><Crown className="w-3.5 h-3.5 text-purple-700" /> Executive Director</p>
+                    <p className="text-[11px] text-gray-500">Corporate-wide executive governance</p>
+                  </div>
+                </label>
+              </div>
+
+              {/* Conditional Managed Unit Selection */}
+              {values.is_general_manager && (
+                <div className="mt-2.5 p-3 bg-teal-50/60 border border-teal-200 rounded animate-in fade-in duration-150">
+                  <label htmlFor="managed_unit" className="text-xs font-semibold text-teal-950 block mb-1">
+                    Assigned Property / Unit <span className="text-primary-red">*</span>
+                  </label>
+                  <Field
+                    as="select"
+                    id="managed_unit"
+                    name="managed_unit"
+                    className="w-full bg-white border border-teal-300 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 rounded px-3 py-2 text-xs outline-none transition-all"
+                  >
+                    <option value="">
+                      {unitsLoading ? "Loading units..." : "Select the property this General Manager oversees"}
+                    </option>
+                    {activeUnits.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.name} ({u.code}) {u.location ? `— ${u.location}` : ""}
+                      </option>
+                    ))}
+                  </Field>
+                  <ErrorMessage name="managed_unit" component="div" className="text-primary-red text-xs mt-1" />
+                  <p className="text-[11px] text-teal-800/80 mt-1">
+                    Tickets, escalations, and performance dashboards for this property will be under this General Manager's authority.
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="pt-3 flex justify-end gap-2.5 border-t border-gray-100 mt-4">

@@ -9,7 +9,7 @@ import {
   createTicket as CreateTicketPayload,
   updateTicket as UpdateTicketPayload,
 } from "@/services/tickets";
-import useAxiosAuth from "../authentication/useAxiosAuth";
+import useAxiosAuth, { hasToken } from "../authentication/useAxiosAuth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useFetchTickets(params?: TicketQueryParams) {
@@ -26,10 +26,11 @@ export function useFetchTickets(params?: TicketQueryParams) {
       params?.issue || "all_issue",
       params?.my_tickets ? "my_t" : "",
       params?.my_assigned ? "my_a" : "",
+      params?.escalated ? "esc" : "",
       params?.search || "",
     ],
     queryFn: () => getTickets(headers, params),
-    enabled: !!headers,
+    enabled: hasToken(headers),
   });
 }
 
@@ -39,7 +40,7 @@ export function useFetchTicket(reference: string) {
   return useQuery({
     queryKey: ["ticket", reference],
     queryFn: () => getTicket(reference, headers),
-    enabled: !!headers && !!reference,
+    enabled: hasToken(headers) && !!reference,
   });
 }
 

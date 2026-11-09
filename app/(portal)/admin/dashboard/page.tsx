@@ -3,6 +3,7 @@
 import { useFetchEmployees } from "@/hooks/accounts/actions";
 import { useFetchDepartments } from "@/hooks/departments/actions";
 import { useFetchUnits } from "@/hooks/units/actions";
+import { useFetchGroups } from "@/hooks/groups/actions";
 import { useFetchCategories } from "@/hooks/categories/actions";
 import { useFetchIssues } from "@/hooks/issues/actions";
 import { useFetchTickets } from "@/hooks/tickets/actions";
@@ -12,6 +13,7 @@ import {
   ArrowUpRight,
   Loader2,
   Users,
+  Users2,
   Shield,
   CheckCircle2,
   XCircle,
@@ -41,6 +43,7 @@ import CreateEmployeeBulk from "@/forms/accounts/CreateEmployeeBulk";
 import CreateEmployeeBulkUpload from "@/forms/accounts/CreateEmployeeBulkUpload";
 import UpdateUser from "@/forms/accounts/UpdateUser";
 import CreateUnit from "@/forms/units/CreateUnit";
+import CreateGroup from "@/forms/groups/CreateGroup";
 import CreateDepartment from "@/forms/departments/CreateDepartment";
 import CreateCategory from "@/forms/categories/CreateCategory";
 import CreateIssue from "@/forms/issues/CreateIssue";
@@ -49,6 +52,7 @@ export default function AdminDashboard() {
   const { data: users, isLoading: usersLoading, isError: usersError } = useFetchEmployees();
   const { data: departments } = useFetchDepartments();
   const { data: units } = useFetchUnits();
+  const { data: groups } = useFetchGroups();
   const { data: categories } = useFetchCategories();
   const { data: issues } = useFetchIssues();
   const { data: tickets, isLoading: ticketsLoading } = useFetchTickets();
@@ -60,7 +64,7 @@ export default function AdminDashboard() {
 
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [modalType, setModalType] = useState<
-    "none" | "single_user" | "bulk_user" | "csv_user" | "edit_user" | "unit" | "dept" | "cat" | "issue"
+    "none" | "single_user" | "bulk_user" | "csv_user" | "edit_user" | "unit" | "group" | "dept" | "cat" | "issue"
   >("none");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedTicket, setSelectedTicket] = useState<TicketType | null>(null);
@@ -103,6 +107,7 @@ export default function AdminDashboard() {
 
   const activeUsersCount = users?.filter((u) => u.is_active)?.length || 0;
   const totalUnits = units?.length || 0;
+  const totalGroups = groups?.length || 0;
   const totalDepts = departments?.length || 0;
   const totalCats = categories?.length || 0;
   const totalIssues = issues?.length || 0;
@@ -922,6 +927,7 @@ export default function AdminDashboard() {
                 <UpdateUser user={selectedUser} onSuccess={closeModal} onCancel={closeModal} />
               )}
               {modalType === "unit" && <CreateUnit onSuccess={closeModal} onCancel={closeModal} />}
+              {modalType === "group" && <CreateGroup onSuccess={closeModal} onCancel={closeModal} />}
               {modalType === "dept" && <CreateDepartment onSuccess={closeModal} onCancel={closeModal} />}
               {modalType === "cat" && <CreateCategory onSuccess={closeModal} onCancel={closeModal} />}
               {modalType === "issue" && <CreateIssue onSuccess={closeModal} onCancel={closeModal} />}

@@ -19,3 +19,12 @@ export const apiMultipartActions: AxiosInstance = axios?.create({
   withCredentials: true,
 });
 
+// List endpoints are paginated at 100 rows by default. Until the screens page
+// through results, ask for up to 1000 rows so lists and counts are complete.
+apiActions.interceptors.request.use((config) => {
+  if ((config.method ?? "get").toLowerCase() === "get") {
+    config.params = { page_size: 1000, ...(config.params ?? {}) };
+  }
+  return config;
+});
+

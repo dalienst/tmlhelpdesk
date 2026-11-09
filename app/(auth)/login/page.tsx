@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { getSession, signIn } from "next-auth/react";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import { Eye, EyeOff, Loader2, Lock, Mail, AlertCircle, ArrowRight } from "lucid
 import { useFormik } from "formik";
 import { LoginSchema } from "@/validation";
 import Image from "next/image";
+import { dashboardPath } from "@/lib/roles";
 
 interface CustomUser extends User {
   is_employee?: boolean;
@@ -26,6 +27,13 @@ interface CustomSession extends Session {
 
 export default function Login() {
   const [loading, setLoading] = useState<boolean>(false);
+
+  // Sent here by an expired session: say why, once
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("expired") === "1") {
+      toast("Your session has expired. Please sign in again.", { id: "session-expired" });
+    }
+  }, []);
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const router = useRouter();
@@ -59,24 +67,8 @@ export default function Login() {
           session = (await getSession()) as CustomSession | null;
         }
 
-        const user = session?.user;
-        const isAdmin = user?.is_admin === true || user?.is_superuser === true;
-        const isTech = user?.is_technician === true || String(user?.is_technician) === "true";
-        const isManager = user?.is_manager === true || user?.is_hod === true;
-        const isEmployee = user?.is_employee === true;
-
-        // Technician role must take precedence over general employee!
-        if (isAdmin) {
-          router.push("/admin/dashboard");
-        } else if (isTech) {
-          router.push("/technician/dashboard");
-        } else if (isManager) {
-          router.push("/manager/dashboard");
-        } else if (isEmployee) {
-          router.push("/employee/dashboard");
-        } else {
-          router.push("/employee/dashboard");
-        }
+        // One shared role order for login, sidebar and ticket pages
+        router.push(dashboardPath(session?.user));
       }
     },
   });

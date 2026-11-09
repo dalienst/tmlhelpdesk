@@ -7,6 +7,11 @@ import { PaginatedResponse } from "./general";
 export interface Department {
   id: string;
   unit: string;
+  unit_reference?: string;
+  group?: string | null;
+  group_name?: string | null;
+  group_code?: string | null;
+  group_reference?: string | null;
   name: string;
   code: string;
   description: string;
@@ -22,6 +27,7 @@ export interface Department {
 
 export interface createDepartment {
   unit: string;
+  group?: string | null;
   name: string;
   code: string;
   description?: string;
@@ -31,6 +37,7 @@ export interface createDepartment {
 
 export interface updateDepartment {
   unit?: string;
+  group?: string | null;
   name?: string;
   code?: string;
   description?: string;
