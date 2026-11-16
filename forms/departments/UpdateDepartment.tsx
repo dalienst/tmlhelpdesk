@@ -80,6 +80,7 @@ export default function UpdateDepartment({
               code: values.code,
               description: values.description || undefined,
               supervisor: values.supervisor || null,
+              group: values.group || null,
               staff: values.staff,
               is_active: values.is_active,
             };

@@ -66,6 +66,7 @@ export default function CreateDepartment({
               code: values.code,
               description: values.description || undefined,
               supervisor: values.supervisor || null,
+              group: values.group || null,
               staff: values.staff,
             };
             await createDepartment(payload);

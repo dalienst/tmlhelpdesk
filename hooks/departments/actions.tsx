@@ -44,6 +44,7 @@ export function useCreateDepartment() {
       createDepartment(data, headers),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["departments"] });
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
     },
   });
 }
@@ -62,6 +63,7 @@ export function useUpdateDepartment() {
     }) => updateDepartment(reference, data, headers),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["departments"] });
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
       queryClient.invalidateQueries({ queryKey: ["department"] });
     },
   });
@@ -76,6 +78,7 @@ export function useDeactivateDepartment() {
       deactivateDepartment(reference, headers),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["departments"] });
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
       queryClient.invalidateQueries({ queryKey: ["department"] });
     },
   });
@@ -89,6 +92,7 @@ export function useDeleteDepartment() {
     mutationFn: (reference: string) => deleteDepartment(reference, headers),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["departments"] });
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
       queryClient.invalidateQueries({ queryKey: ["department"] });
     },
   });
