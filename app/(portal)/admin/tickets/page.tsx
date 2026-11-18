@@ -102,7 +102,7 @@ export default function AdminTicketsPage() {
       t.subject?.toLowerCase().includes(term) ||
       t.requester_name?.toLowerCase().includes(term) ||
       t.requester_email?.toLowerCase().includes(term) ||
-      t.requester_payroll_no?.toLowerCase().includes(term) ||
+      t.requester_department_name?.toLowerCase().includes(term) ||
       t.assigned_to_name?.toLowerCase().includes(term) ||
       t.department_name?.toLowerCase().includes(term) ||
       t.unit_name?.toLowerCase().includes(term);
@@ -444,8 +444,8 @@ export default function AdminTicketsPage() {
 
                     <td className="px-4 py-3 text-gray-700">
                       <p className="font-medium text-gray-900">{ticket.requester_name || ticket.requester}</p>
-                      {ticket.requester_payroll_no && (
-                        <p className="text-[10px] text-gray-400">PR: {ticket.requester_payroll_no}</p>
+                      {ticket.requester_department_name && (
+                        <p className="text-[10px] text-gray-400">{ticket.requester_department_name}</p>
                       )}
                     </td>
 
@@ -551,9 +551,9 @@ export default function AdminTicketsPage() {
                     <p className="text-[11px] text-gray-500">{selectedTicket.requester_email}</p>
                   </div>
                 </div>
-                {selectedTicket.requester_payroll_no && (
+                {selectedTicket.requester_department_name && (
                   <span className="font-mono text-xs font-semibold px-2 py-0.5 bg-white border border-blue-200 rounded text-gray-700">
-                    Payroll: {selectedTicket.requester_payroll_no}
+                    {selectedTicket.requester_department_name}
                   </span>
                 )}
               </div>

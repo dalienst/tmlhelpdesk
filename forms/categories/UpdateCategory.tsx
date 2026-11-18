@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useUpdateCategory, useDeleteCategory } from "@/hooks/categories/actions";
-import { useFetchDepartments } from "@/hooks/departments/actions";
+import { useFetchGroups } from "@/hooks/groups/actions";
 import { useFetchEmployees } from "@/hooks/accounts/actions";
 import { Category } from "@/services/categories";
 import { Formik, Form, Field, ErrorMessage } from "formik";
@@ -17,7 +17,7 @@ interface UpdateCategoryProps {
 }
 
 const validationSchema = Yup.object({
-  department: Yup.string().required("Department is required"),
+  group: Yup.string().required("Choose the functional group that handles this category"),
   name: Yup.string().required("Category name is required"),
   code: Yup.string().required("Category code is required"),
   description: Yup.string().nullable(),
@@ -32,11 +32,11 @@ export default function UpdateCategory({
 }: UpdateCategoryProps) {
   const { mutateAsync: updateCategory } = useUpdateCategory();
   const { mutateAsync: deleteCategory } = useDeleteCategory();
-  const { data: departments, isLoading: deptsLoading } = useFetchDepartments();
+  const { data: groups, isLoading: groupsLoading } = useFetchGroups();
   const { data: employees, isLoading: employeesLoading } = useFetchEmployees();
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const activeDepartments = departments?.filter((d) => d.is_active) || [];
+  const activeGroups = groups?.filter((g) => g.is_active) || [];
 
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to deactivate this category?")) return;
@@ -74,7 +74,7 @@ export default function UpdateCategory({
 
       <Formik
         initialValues={{
-          department: category.department_name || category.department,
+          group: category.group_reference || "",
           name: category.name || "",
           code: category.code || "",
           description: category.description || "",
@@ -86,7 +86,7 @@ export default function UpdateCategory({
         onSubmit={async (values, { setSubmitting }) => {
           try {
             const payload = {
-              department: values.department,
+              group: values.group,
               name: values.name,
               code: values.code,
               description: values.description || undefined,
@@ -115,26 +115,27 @@ export default function UpdateCategory({
           <Form className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Department <span className="text-red-500">*</span>
+                Functional Group <span className="text-red-500">*</span>
               </label>
-              {deptsLoading ? (
+              {groupsLoading ? (
                 <div className="flex items-center gap-2 py-2 text-xs text-gray-400">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Loading departments...
+                  <Loader2 className="h-4 w-4 animate-spin" /> Loading groups...
                 </div>
               ) : (
                 <Field
                   as="select"
-                  name="department"
+                  name="group"
                   className="w-full px-3 py-2 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600 bg-white"
                 >
-                  {activeDepartments.map((dept) => (
-                    <option key={dept.id} value={dept.name}>
-                      {dept.name} ({dept.unit})
+                  <option value="">Select Group</option>
+                  {activeGroups.map((g) => (
+                    <option key={g.id} value={g.reference}>
+                      {g.name} ({g.code})
                     </option>
                   ))}
                 </Field>
               )}
-              <ErrorMessage name="department" component="p" className="text-red-500 text-[11px] mt-0.5" />
+              <ErrorMessage name="group" component="p" className="text-red-500 text-[11px] mt-0.5" />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -177,10 +178,10 @@ export default function UpdateCategory({
                   name="supervisor"
                   className="w-full px-3 py-2 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600 bg-white"
                 >
-                  <option value="">No specific lead (defaults to department HOD)</option>
+                  <option value="">No specific lead (each unit&apos;s department head handles it)</option>
                   {employees?.map((emp) => (
                     <option key={emp.id} value={emp.email}>
-                      {emp.first_name} {emp.last_name} ({emp.payroll_no})
+                      {emp.first_name} {emp.last_name} ({emp.email})
                     </option>
                   ))}
                 </Field>

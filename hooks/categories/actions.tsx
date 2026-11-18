@@ -12,12 +12,12 @@ import {
 import useAxiosAuth, { hasToken } from "../authentication/useAxiosAuth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-export function useFetchCategories(department?: string) {
+export function useFetchCategories(group?: string) {
   const headers = useAxiosAuth();
 
   return useQuery({
-    queryKey: ["categories", department || "all"],
-    queryFn: () => getCategories(headers, department),
+    queryKey: ["categories", group || "all"],
+    queryFn: () => getCategories(headers, group),
     enabled: hasToken(headers),
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,

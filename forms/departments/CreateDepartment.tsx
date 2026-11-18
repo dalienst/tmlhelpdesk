@@ -21,6 +21,7 @@ const validationSchema = Yup.object({
   code: Yup.string().required("Department code is required"),
   group: Yup.string().nullable(),
   description: Yup.string().nullable(),
+  email: Yup.string().email("Enter a valid email address").nullable(),
   supervisor: Yup.string().nullable(),
   staff: Yup.array().of(Yup.string()),
 });
@@ -53,6 +54,7 @@ export default function CreateDepartment({
           code: "",
           group: "",
           description: "",
+          email: "",
           supervisor: "",
           staff: [] as string[],
         }}
@@ -65,6 +67,7 @@ export default function CreateDepartment({
               name: values.name,
               code: values.code,
               description: values.description || undefined,
+              email: values.email || null,
               supervisor: values.supervisor || null,
               group: values.group || null,
               staff: values.staff,
@@ -115,7 +118,7 @@ export default function CreateDepartment({
 
               <div className="space-y-1">
                 <label htmlFor="group" className="text-xs font-semibold text-gray-700">
-                  Functional Group (Optional)
+                  Functional Group
                 </label>
                 <Field
                   as="select"
@@ -123,7 +126,7 @@ export default function CreateDepartment({
                   name="group"
                   className="w-full bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded px-3 py-2 text-sm outline-none transition-all"
                 >
-                  <option value="">None (Stand-alone Department)</option>
+                  <option value="">None (receives no service requests)</option>
                   {groups?.map((g) => (
                     <option key={g.id || g.code} value={g.name}>
                       {g.name} ({g.code})
@@ -178,6 +181,21 @@ export default function CreateDepartment({
                 ))}
               </Field>
               <ErrorMessage name="supervisor" component="div" className="text-primary-red text-xs mt-0.5" />
+            </div>
+
+            <div className="space-y-1">
+              <label htmlFor="email" className="text-xs font-semibold text-gray-700">
+                Department Mailbox (Optional)
+              </label>
+              <Field
+                id="email"
+                name="email"
+                type="email"
+                placeholder="e.g. it.nairobi@tamarind.co.ke"
+                className="w-full bg-white border border-gray-300 focus:border-primary-blue focus:ring-1 focus:ring-primary-blue rounded px-3 py-2 text-sm outline-none transition-all placeholder:text-gray-400"
+              />
+              <p className="text-[11px] text-gray-500">Copied on every allocation and escalation email for this department.</p>
+              <ErrorMessage name="email" component="div" className="text-primary-red text-xs mt-0.5" />
             </div>
 
             <div className="space-y-1">

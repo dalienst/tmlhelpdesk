@@ -2,6 +2,7 @@
 
 import { useCreateEmployee } from "@/hooks/accounts/actions";
 import { useFetchUnits } from "@/hooks/units/actions";
+import WorkplaceFields from "@/components/forms/WorkplaceFields";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
@@ -27,7 +28,9 @@ const validationSchema = Yup.object({
   first_name: Yup.string().required("First name is required"),
   last_name: Yup.string().required("Last name is required"),
   email: Yup.string().email("Invalid email address").required("Email is required"),
-  payroll_no: Yup.string().required("Payroll number is required"),
+  payroll_no: Yup.string().nullable(),
+  unit: Yup.string().required("Select the unit this person works in"),
+  department: Yup.string().required("Select the department this person works in"),
   is_general_manager: Yup.boolean(),
   managed_unit: Yup.string().when("is_general_manager", {
     is: true,
@@ -46,6 +49,8 @@ export default function CreateEmployee({ onSuccess, onCancel }: CreateEmployeePr
     last_name: "",
     email: "",
     payroll_no: "",
+    unit: "",
+    department: "",
     is_employee: true,
     is_technician: false,
     is_manager: false,
@@ -72,6 +77,7 @@ export default function CreateEmployee({ onSuccess, onCancel }: CreateEmployeePr
           try {
             const payload = {
               ...values,
+              payroll_no: values.payroll_no?.trim() || null,
               managed_unit:
                 values.is_general_manager && values.managed_unit
                   ? values.managed_unit
@@ -140,9 +146,11 @@ export default function CreateEmployee({ onSuccess, onCancel }: CreateEmployeePr
               <ErrorMessage name="email" component="div" className="text-primary-red text-xs mt-0.5" />
             </div>
 
+            <WorkplaceFields />
+
             <div className="space-y-1">
               <label htmlFor="payroll_no" className="text-xs font-semibold text-gray-700">
-                Payroll Number <span className="text-primary-red">*</span>
+                Payroll Number <span className="text-gray-400 font-normal">(optional, visible to admins only)</span>
               </label>
               <Field
                 id="payroll_no"

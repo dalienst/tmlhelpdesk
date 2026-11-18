@@ -29,18 +29,16 @@ import {
 import { useCreateTicket } from "@/hooks/tickets/actions";
 import { useCreateAttachment } from "@/hooks/attachments/actions";
 import { primaryRole } from "@/lib/roles";
-import { useFetchUnits } from "@/hooks/units/actions";
-import { useFetchDepartments } from "@/hooks/departments/actions";
+import { useFetchAccount } from "@/hooks/accounts/actions";
 import { useFetchCategories } from "@/hooks/categories/actions";
 import { useFetchIssues } from "@/hooks/issues/actions";
 
+// Minimal form: unit and department come from the requester's profile,
+// subject defaults to the issue name and priority to the issue default.
 const validationSchema = Yup.object({
-  department: Yup.string().required("Department is required"),
-  category: Yup.string().required("Category is required"),
-  issue: Yup.string().required("Issue / Request type is required"),
-  subject: Yup.string().required("Subject summary is required"),
-  description: Yup.string().required("Detailed description is required"),
-  priority: Yup.string().required("Priority is required"),
+  category: Yup.string().required("Choose a service"),
+  issue: Yup.string().required("Choose the issue"),
+  description: Yup.string().required("Tell us briefly what is wrong"),
 });
 
 export default function NewTicketPage() {
@@ -49,48 +47,33 @@ export default function NewTicketPage() {
   const { mutateAsync: createTicketMutation, isPending: isSubmitting } = useCreateTicket();
   const { mutateAsync: createAttachmentMutation } = useCreateAttachment();
 
-  const { data: units, isLoading: unitsLoading } = useFetchUnits();
-  const { data: departments, isLoading: deptsLoading } = useFetchDepartments();
+  const { data: account, isLoading: accountLoading } = useFetchAccount();
   const { data: categories, isLoading: catsLoading } = useFetchCategories();
   const { data: issues, isLoading: issuesLoading } = useFetchIssues();
 
-  const [selectedUnit, setSelectedUnit] = useState<string>("");
-  const [selectedDept, setSelectedDept] = useState<string>("");
   const [selectedCat, setSelectedCat] = useState<string>("");
-  const [selectedIssueName, setSelectedIssueName] = useState<string>("");
+  const [selectedIssueRef, setSelectedIssueRef] = useState<string>("");
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
 
-  // Filter categories by selected department
-  const filteredCategories = useMemo(() => {
-    if (!selectedDept || !categories) return [];
-    return categories.filter(
-      (c) =>
-        c.is_active &&
-        (c.department_name?.toLowerCase() === selectedDept.toLowerCase() ||
-          c.department?.toLowerCase() === selectedDept.toLowerCase() ||
-          c.department_reference === selectedDept)
-    );
-  }, [selectedDept, categories]);
+  const profileMissing = !accountLoading && !account?.unit;
 
-  // Filter issues by selected category
+  // One list of services for everyone; only categories linked to a group can be routed
+  const activeCategories = useMemo(
+    () => (categories || []).filter((c) => c.is_active && c.group_reference),
+    [categories]
+  );
+
+  // Issues of the chosen category
   const filteredIssues = useMemo(() => {
     if (!selectedCat || !issues) return [];
-    return issues.filter(
-      (i) =>
-        i.is_active &&
-        (i.category_name?.toLowerCase() === selectedCat.toLowerCase() ||
-          i.category?.toLowerCase() === selectedCat.toLowerCase() ||
-          i.category_reference === selectedCat)
-    );
+    return issues.filter((i) => i.is_active && i.category_reference === selectedCat);
   }, [selectedCat, issues]);
 
-  // Selected issue details for live dispatch preview
+  // Selected issue details for the preview panel
   const currentIssue = useMemo(() => {
-    if (!selectedIssueName || !issues) return null;
-    return issues.find(
-      (i) => i.name === selectedIssueName || i.reference === selectedIssueName
-    );
-  }, [selectedIssueName, issues]);
+    if (!selectedIssueRef || !issues) return null;
+    return issues.find((i) => i.reference === selectedIssueRef) || null;
+  }, [selectedIssueRef, issues]);
 
   // Handle local file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,13 +121,8 @@ export default function NewTicketPage() {
 
       // Step 2: Create ticket
       const payload: any = {
-        unit: values.unit || undefined,
-        department: values.department,
-        category: values.category,
         issue: values.issue,
-        subject: values.subject,
         description: values.description,
-        priority: values.priority,
       };
 
       const newTicket = await createTicketMutation(payload);
@@ -220,7 +198,7 @@ export default function NewTicketPage() {
               </h1>
             </div>
             <p className="text-xs text-gray-500 mt-1 max-w-2xl">
-              Fill in the details below. Requests are automatically routed to the designated technician with SLA monitoring.
+              Pick the service and issue, then describe the problem. We route it to your unit&apos;s team and the least-busy technician picks it up.
             </p>
           </div>
         </div>
@@ -233,111 +211,64 @@ export default function NewTicketPage() {
           <div className="bg-white p-6 rounded border border-gray-200 shadow-sm">
             <Formik
               initialValues={{
-                unit: "",
-                department: "",
                 category: "",
                 issue: "",
-                subject: "",
                 description: "",
-                priority: "MEDIUM",
               }}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
-              {({ values, setFieldValue }) => (
+              {({ setFieldValue }) => (
                 <Form className="space-y-5">
-                  {/* Step 1: Unit & Department */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Unit / Branch */}
-                    <div>
-                      <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 mb-1.5">
-                        <Building2 className="w-3.5 h-3.5 text-gray-400" />
-                        1. Branch / Unit <span className="text-gray-400 font-normal">(Optional)</span>
-                      </label>
-                      <Field
-                        as="select"
-                        name="unit"
-                        disabled={unitsLoading}
-                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                          const unitVal = e.target.value;
-                          setFieldValue("unit", unitVal);
-                          setSelectedUnit(unitVal);
-                        }}
-                        className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded outline-none focus:border-primary-blue focus:ring-1 focus:ring-primary-blue transition text-gray-800"
-                      >
-                        <option value="">Select Branch (or default)</option>
-                        {units?.map((u) => (
-                          <option key={u.id} value={u.name}>
-                            {u.name} ({u.code})
-                          </option>
-                        ))}
-                      </Field>
-                    </div>
-
-                    {/* Department */}
-                    <div>
-                      <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 mb-1.5">
-                        <Layers className="w-3.5 h-3.5 text-gray-400" />
-                        2. Target Department <span className="text-primary-red">*</span>
-                      </label>
-                      <Field
-                        as="select"
-                        name="department"
-                        disabled={deptsLoading}
-                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                          const dept = e.target.value;
-                          setFieldValue("department", dept);
-                          setSelectedDept(dept);
-                          setFieldValue("category", "");
-                          setSelectedCat("");
-                          setFieldValue("issue", "");
-                          setSelectedIssueName("");
-                        }}
-                        className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded outline-none focus:border-primary-blue focus:ring-1 focus:ring-primary-blue transition text-gray-800"
-                      >
-                        <option value="">
-                          {deptsLoading ? "Loading departments..." : "Select Department (e.g. IT, Purchasing)"}
-                        </option>
-                        {departments?.map((d) => (
-                          <option key={d.id} value={d.name}>
-                            {d.name} ({d.code})
-                          </option>
-                        ))}
-                      </Field>
-                      <ErrorMessage name="department" component="p" className="text-primary-red text-[11px] mt-1" />
-                    </div>
+                  {/* Who this request is for: taken from the profile, never asked */}
+                  <div
+                    className={`flex items-start gap-2.5 p-3 rounded border text-xs ${
+                      profileMissing
+                        ? "bg-amber-50 border-amber-200 text-amber-800"
+                        : "bg-gray-50 border-gray-200 text-gray-700"
+                    }`}
+                  >
+                    <Building2 className="w-4 h-4 mt-0.5 shrink-0 text-gray-400" />
+                    {accountLoading ? (
+                      <span>Loading your profile...</span>
+                    ) : profileMissing ? (
+                      <span>
+                        Your profile has no unit set yet, so requests cannot be routed. Ask an administrator to set
+                        your unit and department under Staff &amp; Users.
+                      </span>
+                    ) : (
+                      <span>
+                        Raising as <strong>{account?.first_name} {account?.last_name}</strong>
+                        {account?.department_name ? `, ${account.department_name}` : ""} &middot;{" "}
+                        <strong>{account?.unit_name}</strong>. It goes to your unit&apos;s team automatically.
+                      </span>
+                    )}
                   </div>
 
-                  {/* Step 2: Category & Issue */}
+                  {/* Step 1: Category & Issue */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Category */}
                     <div>
                       <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 mb-1.5">
                         <FolderTree className="w-3.5 h-3.5 text-gray-400" />
-                        3. Service Category <span className="text-primary-red">*</span>
+                        1. What do you need help with? <span className="text-primary-red">*</span>
                       </label>
                       <Field
                         as="select"
                         name="category"
-                        disabled={!selectedDept || catsLoading}
+                        disabled={catsLoading}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                          const cat = e.target.value;
-                          setFieldValue("category", cat);
-                          setSelectedCat(cat);
+                          setFieldValue("category", e.target.value);
+                          setSelectedCat(e.target.value);
                           setFieldValue("issue", "");
-                          setSelectedIssueName("");
+                          setSelectedIssueRef("");
                         }}
                         className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded outline-none focus:border-primary-blue focus:ring-1 focus:ring-primary-blue transition text-gray-800 disabled:bg-gray-50 disabled:text-gray-400"
                       >
                         <option value="">
-                          {!selectedDept
-                            ? "Select a department first"
-                            : catsLoading
-                              ? "Loading categories..."
-                              : "Select Category (e.g. Procurement, Hardware)"}
+                          {catsLoading ? "Loading categories..." : "Select a service (e.g. IT Support, Maintenance)"}
                         </option>
-                        {filteredCategories.map((c) => (
-                          <option key={c.id} value={c.name}>
+                        {activeCategories.map((c) => (
+                          <option key={c.id} value={c.reference}>
                             {c.name}
                           </option>
                         ))}
@@ -345,39 +276,30 @@ export default function NewTicketPage() {
                       <ErrorMessage name="category" component="p" className="text-primary-red text-[11px] mt-1" />
                     </div>
 
-                    {/* Specific Issue */}
                     <div>
                       <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 mb-1.5">
                         <ListTree className="w-3.5 h-3.5 text-gray-400" />
-                        4. Specific Request / Issue <span className="text-primary-red">*</span>
+                        2. Which issue? <span className="text-primary-red">*</span>
                       </label>
                       <Field
                         as="select"
                         name="issue"
                         disabled={!selectedCat || issuesLoading}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                          const issName = e.target.value;
-                          setFieldValue("issue", issName);
-                          setSelectedIssueName(issName);
-                          const matching = issues?.find((i) => i.name === issName);
-                          if (matching) {
-                            setFieldValue("priority", matching.default_priority || "MEDIUM");
-                            if (!values.subject) {
-                              setFieldValue("subject", matching.name);
-                            }
-                          }
+                          setFieldValue("issue", e.target.value);
+                          setSelectedIssueRef(e.target.value);
                         }}
                         className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded outline-none focus:border-primary-blue focus:ring-1 focus:ring-primary-blue transition text-gray-800 disabled:bg-gray-50 disabled:text-gray-400"
                       >
                         <option value="">
                           {!selectedCat
-                            ? "Select a category first"
+                            ? "Select a service first"
                             : issuesLoading
-                              ? "Loading service types..."
-                              : "Select Service Request (e.g. POS Fault, AC Leak, Uniform Request)"}
+                              ? "Loading issues..."
+                              : "Select the issue (e.g. POS Fault, AC Leak)"}
                         </option>
                         {filteredIssues.map((i) => (
-                          <option key={i.id} value={i.name}>
+                          <option key={i.id} value={i.reference}>
                             {i.name}
                           </option>
                         ))}
@@ -386,49 +308,16 @@ export default function NewTicketPage() {
                     </div>
                   </div>
 
-                  {/* Subject and Priority */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="sm:col-span-2">
-                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                        Subject / Summary <span className="text-primary-red">*</span>
-                      </label>
-                      <Field
-                        type="text"
-                        name="subject"
-                        placeholder="e.g. POS terminal frozen at Bar Station 2, AC dripping in Room 204, or Uniform Replacement"
-                        className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded outline-none focus:border-primary-blue focus:ring-1 focus:ring-primary-blue transition text-gray-800"
-                      />
-                      <ErrorMessage name="subject" component="p" className="text-primary-red text-[11px] mt-1" />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                        Priority Level <span className="text-primary-red">*</span>
-                      </label>
-                      <Field
-                        as="select"
-                        name="priority"
-                        className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded outline-none focus:border-primary-blue focus:ring-1 focus:ring-primary-blue transition text-gray-800 font-medium"
-                      >
-                        <option value="LOW">Low</option>
-                        <option value="MEDIUM">Medium</option>
-                        <option value="HIGH">High</option>
-                        <option value="CRITICAL">Critical</option>
-                      </Field>
-                      <ErrorMessage name="priority" component="p" className="text-primary-red text-[11px] mt-1" />
-                    </div>
-                  </div>
-
                   {/* Detailed Description */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                      Detailed Description &amp; Specifications <span className="text-primary-red">*</span>
+                      3. Describe the problem <span className="text-primary-red">*</span>
                     </label>
                     <Field
                       as="textarea"
                       rows={5}
                       name="description"
-                      placeholder="Provide clear details (e.g. equipment location, station/room number, fault observed, steps to reproduce, or required items)..."
+                      placeholder="Where is it, what happened, and anything the technician should know (e.g. Bar station 2 till frozen since 10am)..."
                       className="w-full p-3 text-xs bg-white border border-gray-200 rounded outline-none focus:border-primary-blue focus:ring-1 focus:ring-primary-blue transition text-gray-800 leading-relaxed"
                     />
                     <ErrorMessage name="description" component="p" className="text-primary-red text-[11px] mt-1" />
@@ -507,7 +396,7 @@ export default function NewTicketPage() {
                     </Link>
                     <button
                       type="submit"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || profileMissing}
                       className="inline-flex items-center gap-2 px-6 py-2 bg-primary-blue hover:bg-primary-blue/95 text-white rounded text-xs font-semibold transition shadow-sm disabled:opacity-50"
                     >
                       {isSubmitting ? (
@@ -564,10 +453,11 @@ export default function NewTicketPage() {
                   <div className="flex items-center justify-between p-2.5 rounded bg-gray-50 border border-gray-100">
                     <span className="text-gray-500 flex items-center gap-1.5">
                       <UserCheck className="w-3.5 h-3.5 text-technician-green" />
-                      Assigned Handler:
+                      Handled by:
                     </span>
-                    <span className="font-semibold text-gray-900">
-                      {currentIssue.technician_name || "Department Supervisor"}
+                    <span className="font-semibold text-gray-900 text-right">
+                      {currentIssue.group_name || "Service team"}
+                      {account?.unit_name ? `, ${account.unit_name}` : ""}
                     </span>
                   </div>
 
@@ -594,7 +484,7 @@ export default function NewTicketPage() {
                 <TicketIcon className="w-8 h-8 mx-auto text-gray-300" />
                 <p className="text-xs font-semibold text-gray-600">No Service Selected</p>
                 <p className="text-[11px] text-gray-400 max-w-xs mx-auto">
-                  Choose a department and specific request type to preview routing and target resolution SLA.
+                  Choose a service and issue to see who handles it and how fast.
                 </p>
               </div>
             )}

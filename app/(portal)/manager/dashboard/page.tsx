@@ -180,7 +180,7 @@ export default function ManagerDashboard() {
       ticket.ticket_number?.toLowerCase().includes(term) ||
       ticket.requester_name?.toLowerCase().includes(term) ||
       ticket.requester_email?.toLowerCase().includes(term) ||
-      ticket.requester_payroll_no?.toLowerCase().includes(term) ||
+      ticket.requester_department_name?.toLowerCase().includes(term) ||
       ticket.assigned_to_name?.toLowerCase().includes(term) ||
       ticket.issue_name?.toLowerCase().includes(term) ||
       ticket.category_name?.toLowerCase().includes(term) ||
@@ -450,9 +450,9 @@ export default function ManagerDashboard() {
                       <p className="font-medium text-gray-900">
                         {ticket.requester_name || ticket.requester}
                       </p>
-                      {ticket.requester_payroll_no && (
+                      {ticket.requester_department_name && (
                         <p className="text-[10px] text-gray-400">
-                          Payroll: {ticket.requester_payroll_no}
+                          {ticket.requester_department_name}
                         </p>
                       )}
                     </td>

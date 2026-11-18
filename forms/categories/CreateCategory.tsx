@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useCreateCategory } from "@/hooks/categories/actions";
-import { useFetchDepartments } from "@/hooks/departments/actions";
+import { useFetchGroups } from "@/hooks/groups/actions";
 import { useFetchEmployees } from "@/hooks/accounts/actions";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -11,11 +11,11 @@ import { Loader2 } from "lucide-react";
 interface CreateCategoryProps {
   onSuccess?: () => void;
   onCancel?: () => void;
-  defaultDepartment?: string;
+  defaultGroup?: string;
 }
 
 const validationSchema = Yup.object({
-  department: Yup.string().required("Department is required"),
+  group: Yup.string().required("Choose the functional group that handles this category"),
   name: Yup.string().required("Category name is required"),
   code: Yup.string().required("Category code is required"),
   description: Yup.string().nullable(),
@@ -25,26 +25,26 @@ const validationSchema = Yup.object({
 export default function CreateCategory({
   onSuccess,
   onCancel,
-  defaultDepartment,
+  defaultGroup,
 }: CreateCategoryProps) {
   const { mutateAsync: createCategory } = useCreateCategory();
-  const { data: departments, isLoading: deptsLoading } = useFetchDepartments();
+  const { data: groups, isLoading: groupsLoading } = useFetchGroups();
   const { data: employees, isLoading: employeesLoading } = useFetchEmployees();
 
-  const activeDepartments = departments?.filter((d) => d.is_active) || [];
+  const activeGroups = groups?.filter((g) => g.is_active) || [];
 
   return (
     <div className="w-full">
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Create Service Category</h2>
         <p className="text-xs text-gray-500 mt-0.5">
-          Add a service section under a department (e.g., Payroll under Finance).
+          Create a category once for a functional group (e.g. &quot;POS &amp; Systems&quot; under ICT). Every unit&apos;s department in that group handles it, so you never repeat it per unit.
         </p>
       </div>
 
       <Formik
         initialValues={{
-          department: defaultDepartment || (activeDepartments[0]?.name || ""),
+          group: defaultGroup || "",
           name: "",
           code: "",
           description: "",
@@ -55,7 +55,7 @@ export default function CreateCategory({
         onSubmit={async (values, { setSubmitting, resetForm }) => {
           try {
             const payload = {
-              department: values.department,
+              group: values.group,
               name: values.name,
               code: values.code,
               description: values.description || undefined,
@@ -84,27 +84,27 @@ export default function CreateCategory({
           <Form className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Department <span className="text-red-500">*</span>
+                Functional Group <span className="text-red-500">*</span>
               </label>
-              {deptsLoading ? (
+              {groupsLoading ? (
                 <div className="flex items-center gap-2 py-2 text-xs text-gray-400">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Loading departments...
+                  <Loader2 className="h-4 w-4 animate-spin" /> Loading groups...
                 </div>
               ) : (
                 <Field
                   as="select"
-                  name="department"
+                  name="group"
                   className="w-full px-3 py-2 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600 bg-white"
                 >
-                  <option value="">Select Department</option>
-                  {activeDepartments.map((dept) => (
-                    <option key={dept.id} value={dept.name}>
-                      {dept.name} ({dept.unit})
+                  <option value="">Select Group</option>
+                  {activeGroups.map((g) => (
+                    <option key={g.id} value={g.reference}>
+                      {g.name} ({g.code})
                     </option>
                   ))}
                 </Field>
               )}
-              <ErrorMessage name="department" component="p" className="text-red-500 text-[11px] mt-0.5" />
+              <ErrorMessage name="group" component="p" className="text-red-500 text-[11px] mt-0.5" />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -160,10 +160,10 @@ export default function CreateCategory({
                   name="supervisor"
                   className="w-full px-3 py-2 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600 bg-white"
                 >
-                  <option value="">No specific lead (defaults to department HOD)</option>
+                  <option value="">No specific lead (each unit&apos;s department head handles it)</option>
                   {employees?.map((emp) => (
                     <option key={emp.id} value={emp.email}>
-                      {emp.first_name} {emp.last_name} ({emp.payroll_no})
+                      {emp.first_name} {emp.last_name} ({emp.email})
                     </option>
                   ))}
                 </Field>

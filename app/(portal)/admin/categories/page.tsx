@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useFetchCategories } from "@/hooks/categories/actions";
-import { useFetchDepartments } from "@/hooks/departments/actions";
+import { useFetchGroups } from "@/hooks/groups/actions";
 import { Category } from "@/services/categories";
 import CreateCategory from "@/forms/categories/CreateCategory";
 import UpdateCategory from "@/forms/categories/UpdateCategory";
@@ -21,13 +21,13 @@ import {
 } from "lucide-react";
 
 export default function CategoriesManagementPage() {
-  const [selectedDeptFilter, setSelectedDeptFilter] = useState<string>("");
+  const [selectedGroupFilter, setSelectedGroupFilter] = useState<string>("");
   const {
     data: categories,
     isLoading,
     error,
-  } = useFetchCategories(selectedDeptFilter || undefined);
-  const { data: departments } = useFetchDepartments();
+  } = useFetchCategories(selectedGroupFilter || undefined);
+  const { data: groups } = useFetchGroups();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCat, setSelectedCat] = useState<Category | null>(null);
@@ -43,7 +43,7 @@ export default function CategoriesManagementPage() {
     return (
       cat.name?.toLowerCase().includes(term) ||
       cat.code?.toLowerCase().includes(term) ||
-      cat.department_name?.toLowerCase().includes(term) ||
+      cat.group_name?.toLowerCase().includes(term) ||
       cat.supervisor_name?.toLowerCase().includes(term) ||
       cat.description?.toLowerCase().includes(term)
     );
@@ -51,7 +51,8 @@ export default function CategoriesManagementPage() {
 
   const totalCats = categories?.length || 0;
   const activeCats = categories?.filter((c) => c.is_active).length || 0;
-  const uniqueDeptsCount = new Set(categories?.map((c) => c.department_name)).size;
+  const uniqueGroupsCount = new Set(categories?.map((c) => c.group_name).filter(Boolean)).size;
+  const unlinkedCount = categories?.filter((c) => !c.group_reference).length || 0;
 
   return (
     <div className="space-y-6 pb-8">
@@ -62,7 +63,7 @@ export default function CategoriesManagementPage() {
             Service Categories
           </h1>
           <p className="text-xs text-gray-500 mt-0.5">
-            Organize service sections under each department (e.g. Payroll, Accounts Payable, Hardware).
+            Create each category once under a functional group. It then serves every unit: requests go to that unit&apos;s department in the group.
           </p>
         </div>
 
@@ -102,8 +103,8 @@ export default function CategoriesManagementPage() {
 
         <div className="bg-white border border-gray-200 rounded p-4 flex items-center justify-between">
           <div>
-            <p className="text-xs text-gray-500 font-medium">Mapped Departments</p>
-            <p className="text-xl font-semibold text-blue-600 mt-0.5">{uniqueDeptsCount}</p>
+            <p className="text-xs text-gray-500 font-medium">Functional Groups</p>
+            <p className="text-xl font-semibold text-blue-600 mt-0.5">{uniqueGroupsCount}</p>
           </div>
           <div className="h-9 w-9 bg-blue-50 rounded flex items-center justify-center text-blue-600 border border-blue-100">
             <Layers className="h-5 w-5" />
@@ -111,13 +112,21 @@ export default function CategoriesManagementPage() {
         </div>
       </div>
 
+      {unlinkedCount > 0 && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded p-3 text-xs">
+          {unlinkedCount} categor{unlinkedCount === 1 ? "y is" : "ies are"} not linked to a functional group yet, so
+          staff cannot raise requests in {unlinkedCount === 1 ? "it" : "them"}. Edit each one and choose its group.
+          Where you have the same category for several units, keep one and deactivate the copies.
+        </div>
+      )}
+
       {/* Filter and Search Bar */}
       <div className="bg-white border border-gray-200 rounded p-3 flex flex-col sm:flex-row items-center gap-3">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by category name, code, department..."
+            placeholder="Search by category name, code, group..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-3 py-1.5 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600"
@@ -127,14 +136,14 @@ export default function CategoriesManagementPage() {
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <Filter className="h-3.5 w-3.5 text-gray-400 shrink-0" />
           <select
-            value={selectedDeptFilter}
-            onChange={(e) => setSelectedDeptFilter(e.target.value)}
+            value={selectedGroupFilter}
+            onChange={(e) => setSelectedGroupFilter(e.target.value)}
             className="w-full sm:w-56 px-2.5 py-1.5 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600 bg-white"
           >
-            <option value="">All Departments</option>
-            {departments?.map((dept) => (
-              <option key={dept.id} value={dept.name}>
-                {dept.name} ({dept.unit})
+            <option value="">All Groups</option>
+            {groups?.map((g) => (
+              <option key={g.id} value={g.reference}>
+                {g.name} ({g.code})
               </option>
             ))}
           </select>
@@ -167,7 +176,7 @@ export default function CategoriesManagementPage() {
                 <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold">
                   <th className="py-2.5 px-3">Category Name</th>
                   <th className="py-2.5 px-3">Code</th>
-                  <th className="py-2.5 px-3">Department</th>
+                  <th className="py-2.5 px-3">Functional Group</th>
                   <th className="py-2.5 px-3">Category Lead</th>
                   <th className="py-2.5 px-3">Status</th>
                   <th className="py-2.5 px-3 text-right">Actions</th>
@@ -190,7 +199,9 @@ export default function CategoriesManagementPage() {
                       </span>
                     </td>
                     <td className="py-2.5 px-3 font-medium text-gray-700">
-                      {cat.department_name || cat.department}
+                      {cat.group_name || (
+                        <span className="text-amber-600 italic">Not linked: edit to choose a group</span>
+                      )}
                     </td>
                     <td className="py-2.5 px-3 text-gray-600">
                       {cat.supervisor_name ? (
@@ -199,7 +210,7 @@ export default function CategoriesManagementPage() {
                           <span>{cat.supervisor_name}</span>
                         </div>
                       ) : (
-                        <span className="text-gray-400 italic">Department HOD</span>
+                        <span className="text-gray-400 italic">Each unit&apos;s HOD</span>
                       )}
                     </td>
                     <td className="py-2.5 px-3">
@@ -253,7 +264,7 @@ export default function CategoriesManagementPage() {
                 <CreateCategory
                   onSuccess={closeModal}
                   onCancel={closeModal}
-                  defaultDepartment={selectedDeptFilter}
+                  defaultGroup={selectedGroupFilter}
                 />
               ) : (
                 selectedCat && (

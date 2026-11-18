@@ -71,7 +71,9 @@ export default function AdminUsersPage() {
       user.first_name?.toLowerCase().includes(term) ||
       user.last_name?.toLowerCase().includes(term) ||
       user.email?.toLowerCase().includes(term) ||
-      user.payroll_no?.toLowerCase().includes(term);
+      user.payroll_no?.toLowerCase().includes(term) ||
+      user.department_name?.toLowerCase().includes(term) ||
+      user.unit_name?.toLowerCase().includes(term);
 
     const matchesRole =
       roleFilter === "ALL" ||
@@ -266,6 +268,7 @@ export default function AdminUsersPage() {
               <thead>
                 <tr className="bg-gray-50/70 border-b border-gray-200 text-gray-600 font-semibold uppercase text-[11px]">
                   <th className="px-4 py-3">Staff Member</th>
+                  <th className="px-4 py-3">Unit &amp; Department</th>
                   <th className="px-4 py-3">Payroll No</th>
                   <th className="px-4 py-3">Roles & Permissions</th>
                   <th className="px-4 py-3 text-center">Status</th>
@@ -291,6 +294,17 @@ export default function AdminUsersPage() {
                           <p className="text-[11px] text-gray-400">{user.email}</p>
                         </div>
                       </div>
+                    </td>
+
+                    <td className="px-4 py-3">
+                      {user.department_name || user.unit_name ? (
+                        <>
+                          <p className="font-medium text-gray-800">{user.department_name || "No department"}</p>
+                          <p className="text-[11px] text-gray-400">{user.unit_name || "No unit"}</p>
+                        </>
+                      ) : (
+                        <span className="text-[11px] text-amber-600 italic">Not set: requests cannot be routed</span>
+                      )}
                     </td>
 
                     <td className="px-4 py-3">

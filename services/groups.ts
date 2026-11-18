@@ -20,7 +20,6 @@ export interface Group {
   manager: string | null;
   manager_name?: string;
   manager_email?: string;
-  manager_payroll_no?: string;
   departments_count: number;
   departments_list: GroupDepartment[];
   is_active: boolean;

@@ -24,7 +24,8 @@ export interface Ticket {
   requester: string;
   requester_name: string;
   requester_email: string;
-  requester_payroll_no: string;
+  requester_department?: string | null;
+  requester_department_name?: string | null;
   assigned_to: string | null;
   assigned_to_name?: string;
   assigned_to_email?: string;
@@ -83,13 +84,12 @@ export const ESCALATION_REASON_LABELS: Record<EscalationReason, string> = {
   SLA_BREACHED: "SLA breached (automatic)",
 };
 
+// Unit and department are taken from the requester's profile on the server
 export interface createTicket {
-  unit?: string;
-  department?: string;
-  category?: string;
   issue: string;
-  subject: string;
   description: string;
+  subject?: string;
+  requester?: string;
   priority?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 }
 

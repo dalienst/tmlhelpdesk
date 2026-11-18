@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useFetchIssues } from "@/hooks/issues/actions";
 import { useFetchCategories } from "@/hooks/categories/actions";
-import { useFetchDepartments } from "@/hooks/departments/actions";
+import { useFetchGroups } from "@/hooks/groups/actions";
 import { Issue } from "@/services/issues";
 import CreateIssue from "@/forms/issues/CreateIssue";
 import UpdateIssue from "@/forms/issues/UpdateIssue";
@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 export default function IssuesManagementPage() {
-  const [selectedDeptFilter, setSelectedDeptFilter] = useState<string>("");
+  const [selectedGroupFilter, setSelectedGroupFilter] = useState<string>("");
   const [selectedCatFilter, setSelectedCatFilter] = useState<string>("");
 
   const {
@@ -31,12 +31,12 @@ export default function IssuesManagementPage() {
     isLoading,
     error,
   } = useFetchIssues({
-    department: selectedDeptFilter || undefined,
+    group: selectedGroupFilter || undefined,
     category: selectedCatFilter || undefined,
   });
 
-  const { data: departments } = useFetchDepartments();
-  const { data: categories } = useFetchCategories(selectedDeptFilter || undefined);
+  const { data: groups } = useFetchGroups();
+  const { data: categories } = useFetchCategories(selectedGroupFilter || undefined);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
@@ -53,7 +53,7 @@ export default function IssuesManagementPage() {
       issue.name?.toLowerCase().includes(term) ||
       issue.code?.toLowerCase().includes(term) ||
       issue.category_name?.toLowerCase().includes(term) ||
-      issue.department_name?.toLowerCase().includes(term) ||
+      issue.group_name?.toLowerCase().includes(term) ||
       issue.technician_name?.toLowerCase().includes(term) ||
       issue.technician_email?.toLowerCase().includes(term) ||
       issue.description?.toLowerCase().includes(term)
@@ -62,7 +62,7 @@ export default function IssuesManagementPage() {
 
   const totalIssues = issues?.length || 0;
   const activeIssues = issues?.filter((i) => i.is_active).length || 0;
-  const assignedIssuesCount = issues?.filter((i) => i.technician).length || 0;
+  const linkedIssuesCount = issues?.filter((i) => i.group_name).length || 0;
 
   return (
     <div className="space-y-6 pb-8">
@@ -73,7 +73,7 @@ export default function IssuesManagementPage() {
             Issue Types &amp; Assigned Handlers
           </h1>
           <p className="text-xs text-gray-500 mt-0.5">
-            Configure specific services (e.g., P9 Form Request) and designate the technician/officer in charge.
+            Configure specific services (e.g., P9 Form Request). Requests are assigned automatically to the least-busy technician in the requester&apos;s unit.
           </p>
         </div>
 
@@ -103,8 +103,8 @@ export default function IssuesManagementPage() {
 
         <div className="bg-white border border-gray-200 rounded p-4 flex items-center justify-between">
           <div>
-            <p className="text-xs text-gray-500 font-medium">Auto-Routed to Staff</p>
-            <p className="text-xl font-semibold text-blue-600 mt-0.5">{assignedIssuesCount}</p>
+            <p className="text-xs text-gray-500 font-medium">Ready to Route (Grouped)</p>
+            <p className="text-xl font-semibold text-blue-600 mt-0.5">{linkedIssuesCount}</p>
           </div>
           <div className="h-9 w-9 bg-blue-50 rounded flex items-center justify-center text-blue-600 border border-blue-100">
             <UserCheck className="h-5 w-5" />
@@ -128,7 +128,7 @@ export default function IssuesManagementPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by issue name, code, technician, category..."
+            placeholder="Search by issue name, code, category, group..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-3 py-1.5 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600"
@@ -138,17 +138,17 @@ export default function IssuesManagementPage() {
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <Filter className="h-3.5 w-3.5 text-gray-400 shrink-0" />
           <select
-            value={selectedDeptFilter}
+            value={selectedGroupFilter}
             onChange={(e) => {
-              setSelectedDeptFilter(e.target.value);
+              setSelectedGroupFilter(e.target.value);
               setSelectedCatFilter("");
             }}
             className="w-full sm:w-44 px-2.5 py-1.5 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600 bg-white"
           >
-            <option value="">All Departments</option>
-            {departments?.map((dept) => (
-              <option key={dept.id} value={dept.name}>
-                {dept.name}
+            <option value="">All Groups</option>
+            {groups?.map((g) => (
+              <option key={g.id} value={g.reference}>
+                {g.name}
               </option>
             ))}
           </select>
@@ -160,7 +160,7 @@ export default function IssuesManagementPage() {
           >
             <option value="">All Categories</option>
             {categories?.map((cat) => (
-              <option key={cat.id} value={cat.name}>
+              <option key={cat.id} value={cat.reference}>
                 {cat.name}
               </option>
             ))}
@@ -194,8 +194,7 @@ export default function IssuesManagementPage() {
                 <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold">
                   <th className="py-2.5 px-3">Issue / Service Name</th>
                   <th className="py-2.5 px-3">Code</th>
-                  <th className="py-2.5 px-3">Category &amp; Dept</th>
-                  <th className="py-2.5 px-3">Technician In Charge</th>
+                  <th className="py-2.5 px-3">Category &amp; Group</th>
                   <th className="py-2.5 px-3">SLA / Priority</th>
                   <th className="py-2.5 px-3">Status</th>
                   <th className="py-2.5 px-3 text-right">Actions</th>
@@ -219,19 +218,7 @@ export default function IssuesManagementPage() {
                     </td>
                     <td className="py-2.5 px-3 text-gray-700">
                       <span className="font-medium text-gray-900">{issue.category_name}</span>
-                      <span className="text-gray-400 text-[11px]"> ({issue.department_name})</span>
-                    </td>
-                    <td className="py-2.5 px-3">
-                      {issue.technician_name ? (
-                        <div className="flex items-center gap-1.5 text-gray-900 font-medium">
-                          <UserCheck className="h-3.5 w-3.5 text-red-600 shrink-0" />
-                          <span>{issue.technician_name}</span>
-                        </div>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-[11px] text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
-                          <AlertCircle className="h-3 w-3" /> HOD Fallback
-                        </span>
-                      )}
+                      <span className="text-gray-400 text-[11px]"> ({issue.group_name || "no group"})</span>
                     </td>
                     <td className="py-2.5 px-3">
                       <div className="flex items-center gap-2">

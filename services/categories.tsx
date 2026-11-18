@@ -6,9 +6,10 @@ import { PaginatedResponse } from "./general";
 
 export interface Category {
   id: string;
-  department: string;
-  department_name: string;
-  department_reference: string;
+  group: string;
+  group_name: string;
+  group_code?: string;
+  group_reference: string;
   name: string;
   code: string;
   description?: string;
@@ -23,7 +24,7 @@ export interface Category {
 }
 
 export interface createCategory {
-  department: string;
+  group: string;
   name: string;
   code: string;
   description?: string;
@@ -31,7 +32,7 @@ export interface createCategory {
 }
 
 export interface updateCategory {
-  department?: string;
+  group?: string;
   name?: string;
   code?: string;
   description?: string;
@@ -41,10 +42,10 @@ export interface updateCategory {
 
 export const getCategories = async (
   headers: { headers: { Authorization: string } },
-  department?: string
+  group?: string
 ): Promise<Category[]> => {
-  const url = department
-    ? `/api/v1/categories/?department=${encodeURIComponent(department)}`
+  const url = group
+    ? `/api/v1/categories/?group=${encodeURIComponent(group)}`
     : `/api/v1/categories/`;
   const response: AxiosResponse<PaginatedResponse<Category>> =
     await apiActions.get(url, headers);

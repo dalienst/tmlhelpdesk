@@ -523,7 +523,7 @@ export default function ReportsPage() {
                     <thead>
                       <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 uppercase tracking-wider font-semibold">
                         <th className="py-2.5 px-3">Technician</th>
-                        <th className="py-2.5 px-3">Payroll No</th>
+                        <th className="py-2.5 px-3">Email</th>
                         <th className="py-2.5 px-3">Assigned</th>
                         <th className="py-2.5 px-3">Resolved</th>
                         <th className="py-2.5 px-3">In Progress</th>
@@ -535,9 +535,9 @@ export default function ReportsPage() {
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {analytics?.tier2_management?.technician_scorecards?.map((t) => (
-                        <tr key={t.payroll_no || t.name} className="hover:bg-gray-50/70">
+                        <tr key={t.email || t.name} className="hover:bg-gray-50/70">
                           <td className="py-2.5 px-3 font-semibold text-gray-900">{t.name}</td>
-                          <td className="py-2.5 px-3 text-gray-500 font-mono">{t.payroll_no || "-"}</td>
+                          <td className="py-2.5 px-3 text-gray-500 font-mono">{t.email || "-"}</td>
                           <td className="py-2.5 px-3 font-medium text-gray-800">{t.assigned}</td>
                           <td className="py-2.5 px-3 text-emerald-600 font-medium">{t.resolved}</td>
                           <td className="py-2.5 px-3 text-amber-600 font-medium">{t.in_progress}</td>

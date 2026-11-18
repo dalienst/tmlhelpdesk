@@ -65,7 +65,7 @@ export default function CreateEmployeeBulkUpload({ onSuccess, onCancel }: Create
       <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pr-8">
         <div>
           <h2 className="text-lg font-semibold text-gray-900 tracking-tight">Upload Users CSV</h2>
-          <p className="text-xs text-gray-500 mt-0.5">Upload a spreadsheet to bulk create up to 100 users.</p>
+          <p className="text-xs text-gray-500 mt-0.5">Upload a spreadsheet to bulk create up to 100 users. Columns: email, first_name, last_name, and optionally payroll_no, unit (unit code) and department (department code).</p>
         </div>
         
         <button

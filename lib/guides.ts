@@ -100,15 +100,14 @@ export const GUIDE_SECTIONS: GuideSection[] = [
         summary: "How to log a request so it reaches the right person first time.",
         steps: [
           "Click 'Raise a Request' in the left menu.",
-          "Pick the branch, department and service category to narrow the list, then choose the specific Issue / Request type. Choosing the issue is what routes the ticket: the platform fills in the department and unit and assigns the right technician automatically.",
-          "Check the panel on the right: it shows who the ticket will go to and the SLA (the target time to resolve it).",
-          "The priority is pre-filled from the issue type. Only raise it if the problem is genuinely stopping work; Critical tickets alert the head of department immediately.",
-          "Write a short subject and a full description: location (room, outlet, desk), what happened, error messages, asset or serial numbers, and how many people are affected.",
+          "Choose what you need help with (the service, e.g. IT Support), then the specific issue. You don't pick a unit or department: the helpdesk uses the ones on your profile and sends the ticket to your unit's team, where the least-busy technician picks it up.",
+          "Check the panel on the right: it shows which team handles it and the SLA (the target time to resolve it). The priority comes from the issue type.",
+          "Describe the problem: location (room, outlet, desk), what happened, error messages, asset or serial numbers, and how many people are affected. The ticket title is the issue name.",
           "Attach photos or documents if they help (up to 10 files, 15MB each: images, PDF, Word, Excel, PowerPoint, CSV or text).",
           "Click 'Submit Support Ticket'. You are taken to the ticket page, which has its own reference such as TML-IT-2026-0042.",
         ],
         whatHappensNext: [
-          "You receive a 'Ticket Received' email with the ticket number.",
+          "You receive a 'Ticket Allocated' email with the ticket number and the technician's name. The department mailbox and head of department are copied.",
           "The assigned technician receives a 'New Ticket Assigned' email.",
           "The SLA clock starts. If the ticket is Critical, the head of department is alerted straight away.",
         ],
@@ -417,16 +416,16 @@ export const GUIDE_SECTIONS: GuideSection[] = [
         steps: [
           "Units & Branches: create each property or branch with a unique code.",
           "Functional Groups: create the cross-unit groups (Group ICT, Group Maintenance, ...). You can set the Group Manager after creating users.",
-          "User Directory: create accounts and set roles (see the next guide).",
-          "Departments: create each department inside its unit, link it to its functional group, and set its supervisor (head of department) and staff. Staff technicians can work the department's tickets.",
-          "Service Categories: group services inside each department and optionally set a category lead.",
-          "Issue Types & SLAs: create the raiseable items. For each, set the handling technician, the SLA in hours and the default priority. This is what makes routing automatic.",
+          "Departments: create each department inside its unit, link it to its functional group (e.g. each unit's IT department to Group ICT), and set its head, its shared mailbox and its technicians.",
+          "User Directory: create accounts, set roles, and set each person's unit and department. Payroll numbers are optional and only admins see them. Requests are routed from the unit, so it must be set.",
+          "Service Categories: create each category once under a functional group. It then serves every unit, so there is one 'IT Support' category, not one per unit.",
+          "Issue Types & SLAs: create the raiseable items under each category, with the SLA in hours and the default priority. Tickets are assigned to the least-busy technician in the requester's unit department for that group, or its head if it has no technicians.",
           "Escalation Rules: heads of department set their own; check that the defaults suit any department that has not.",
         ],
         troubleshooting: [
           {
             problem: "A ticket went to the wrong person.",
-            fix: "Routing uses the issue type's technician, then the category lead, then the department head. Fix the issue type, then reassign the ticket.",
+            fix: "Routing uses the requester's unit and the category's functional group. Check the requester's unit, that their unit has an active department in that group, and that the department lists its technicians. Then reassign the ticket.",
           },
         ],
       },
@@ -504,7 +503,7 @@ export const FAQS: Faq[] = [
   },
   {
     q: "Who receives escalation emails?",
-    a: "The department's head (or the category lead if the department has none), plus any extra addresses in the department's escalation rules. GM alerts go to the unit's General Manager, or the group manager if the unit has no GM.",
+    a: "The department's head (or the category lead if the department has none), the functional group's manager, the department mailbox and any extra addresses in the department's escalation rules, with the assigned technician copied. The person who raised the ticket gets a short notice. GM alerts go to the unit's General Manager, or the group manager if the unit has no GM.",
     roles: ["technician", "manager", "gm", "group_manager", "director", "admin"],
   },
   {

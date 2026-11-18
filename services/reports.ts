@@ -67,7 +67,7 @@ export interface VolumeTimeline {
 
 export interface TechnicianScorecard {
   name: string;
-  payroll_no: string;
+  email: string;
   assigned: number;
   resolved: number;
   in_progress: number;
