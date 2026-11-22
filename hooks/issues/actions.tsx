@@ -20,7 +20,7 @@ export function useFetchIssues(params?: IssueQueryParams) {
     queryKey: [
       "issues",
       params?.category || "all_cat",
-      params?.department || "all_dept",
+      params?.group || "all_group",
       params?.technician || "all_tech",
       params?.my_issues ? "my_i" : "",
     ],

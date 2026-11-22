@@ -178,7 +178,7 @@ export default function TechnicianDashboard() {
       iss.name?.toLowerCase().includes(term) ||
       iss.code?.toLowerCase().includes(term) ||
       iss.category_name?.toLowerCase().includes(term) ||
-      iss.department_name?.toLowerCase().includes(term)
+      iss.group_name?.toLowerCase().includes(term)
     );
   });
 
@@ -430,7 +430,7 @@ export default function TechnicianDashboard() {
                       <td className="px-4 py-3 text-gray-700">
                         <span className="inline-flex items-center gap-1">
                           <Layers className="w-3 h-3 text-gray-400" />
-                          {issue.department_name}
+                          {issue.group_name}
                         </span>
                       </td>
                       <td className="px-4 py-3">{getPriorityBadge(issue.default_priority)}</td>
@@ -524,9 +524,9 @@ export default function TechnicianDashboard() {
                         <p className="font-medium text-gray-900">
                           {ticket.requester_name || ticket.requester}
                         </p>
-                        {ticket.requester_payroll_no && (
+                        {ticket.requester_department_name && (
                           <p className="text-[10px] text-gray-400">
-                            Payroll: {ticket.requester_payroll_no}
+                            {ticket.requester_department_name}
                           </p>
                         )}
                       </td>

@@ -41,13 +41,13 @@ export default function CreateIssue({
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Define Issue & Assign Handler</h2>
         <p className="text-xs text-gray-500 mt-0.5">
-          Specify the issue (e.g., P9 Form Request) and designate the technician/officer in charge.
+          Specify the issue (e.g., P9 Form Request), its default priority and turnaround time.
         </p>
       </div>
 
       <Formik
         initialValues={{
-          category: defaultCategory || (activeCategories[0]?.name || ""),
+          category: defaultCategory || (activeCategories[0]?.reference || ""),
           name: "",
           code: "",
           description: "",
@@ -107,8 +107,8 @@ export default function CreateIssue({
                 >
                   <option value="">Select Category</option>
                   {activeCategories.map((cat) => (
-                    <option key={cat.id} value={cat.name}>
-                      {cat.name} ({cat.department_name})
+                    <option key={cat.id} value={cat.reference}>
+                      {cat.name} ({cat.group_name || "no group"})
                     </option>
                   ))}
                 </Field>
@@ -155,32 +155,14 @@ export default function CreateIssue({
               </div>
             </div>
 
-            {/* Technician in charge! */}
-            <div className="bg-red-50/50 p-3 rounded border border-red-100">
-              <label className="block text-xs font-semibold text-gray-900 mb-1">
-                Technician / Officer In Charge
-              </label>
-              <p className="text-[11px] text-gray-500 mb-2">
-                When a user submits this issue, the ticket automatically routes to this person.
+            {/* Who handles it */}
+            <div className="bg-blue-50/50 p-3 rounded border border-blue-100">
+              <p className="text-xs font-semibold text-gray-900 mb-1">Who handles this issue</p>
+              <p className="text-[11px] text-gray-600">
+                Requests go to the department of the requester&apos;s own unit in this category&apos;s functional
+                group, and are given to the technician there with the fewest open tickets (or the department head
+                when it has no technicians). Add technicians to departments, not to issues.
               </p>
-              {employeesLoading ? (
-                <div className="flex items-center gap-2 py-1 text-xs text-gray-400">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Loading staff...
-                </div>
-              ) : (
-                <Field
-                  as="select"
-                  name="technician"
-                  className="w-full px-3 py-2 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600 bg-white"
-                >
-                  <option value="">No dedicated technician (routes to department HOD)</option>
-                  {employees?.map((emp) => (
-                    <option key={emp.id} value={emp.email}>
-                      {emp.first_name} {emp.last_name} ({emp.payroll_no})
-                    </option>
-                  ))}
-                </Field>
-              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

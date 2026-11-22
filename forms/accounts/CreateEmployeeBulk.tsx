@@ -5,6 +5,7 @@ import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
 import { Loader2, Plus, Trash2 } from "lucide-react";
+import WorkplaceFields from "@/components/forms/WorkplaceFields";
 
 interface CreateEmployeeBulkProps {
   onSuccess?: () => void;
@@ -15,10 +16,12 @@ const employeeSchema = Yup.object().shape({
   first_name: Yup.string().required("First name is required"),
   last_name: Yup.string().required("Last name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
-  payroll_no: Yup.string().required("Payroll NO is required"),
+  payroll_no: Yup.string().nullable(),
 });
 
 const validationSchema = Yup.object().shape({
+  unit: Yup.string().required("Select the unit these people work in"),
+  department: Yup.string().required("Select their department"),
   employees: Yup.array()
     .of(employeeSchema)
     .min(1, "At least one employee must be added")
@@ -34,15 +37,22 @@ export default function CreateEmployeeBulk({ onSuccess, onCancel }: CreateEmploy
     <div className="w-full">
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Create Multiple Users</h2>
-        <p className="text-xs text-gray-500 mt-0.5">Add up to 15 new users at once manually.</p>
+        <p className="text-xs text-gray-500 mt-0.5">Add up to 15 new users from the same unit and department at once.</p>
       </div>
 
       <Formik
-        initialValues={{ employees: [{ ...emptyEmployee }] }}
+        initialValues={{ unit: "", department: "", employees: [{ ...emptyEmployee }] }}
         validationSchema={validationSchema}
         onSubmit={async (values, { setSubmitting, resetForm }) => {
           try {
-            await createBulkEmployees({ employees: values.employees });
+            await createBulkEmployees({
+              employees: values.employees.map((e) => ({
+                ...e,
+                payroll_no: e.payroll_no?.trim() || null,
+                unit: values.unit,
+                department: values.department,
+              })),
+            });
             toast.success("Users created successfully!");
             resetForm();
             onSuccess?.();
@@ -56,6 +66,9 @@ export default function CreateEmployeeBulk({ onSuccess, onCancel }: CreateEmploy
         {({ values, isSubmitting }) => (
           <Form className="flex flex-col h-full max-h-[70vh]">
             <div className="flex-1 overflow-y-auto pr-2 space-y-3">
+              <div className="bg-white border border-gray-200 rounded p-3">
+                <WorkplaceFields />
+              </div>
               <FieldArray name="employees">
                 {({ push, remove }) => (
                   <div className="space-y-4">
@@ -114,7 +127,7 @@ export default function CreateEmployeeBulk({ onSuccess, onCancel }: CreateEmploy
                           </div>
 
                           <div className="space-y-1">
-                            <label className="text-xs font-semibold text-gray-700">Payroll Number *</label>
+                            <label className="text-xs font-semibold text-gray-700">Payroll Number (optional)</label>
                             <Field
                               name={`employees.${index}.payroll_no`}
                               placeholder="PR-1002"

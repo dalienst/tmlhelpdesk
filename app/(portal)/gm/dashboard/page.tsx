@@ -176,7 +176,7 @@ export default function GeneralManagerDashboard() {
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 uppercase tracking-wider font-semibold">
                     <th className="py-3 px-4">Technician Name</th>
-                    <th className="py-3 px-4">Payroll No</th>
+                    <th className="py-3 px-4">Email</th>
                     <th className="py-3 px-4">Assigned</th>
                     <th className="py-3 px-4">Resolved</th>
                     <th className="py-3 px-4">In Progress</th>
@@ -185,12 +185,12 @@ export default function GeneralManagerDashboard() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {analytics?.tier2_management?.technician_scorecards?.map((t) => (
-                    <tr key={t.payroll_no || t.name} className="hover:bg-gray-50/70 transition-colors">
+                    <tr key={t.email || t.name} className="hover:bg-gray-50/70 transition-colors">
                       <td className="py-3 px-4 font-semibold text-gray-900">
                         {t.name}
                       </td>
                       <td className="py-3 px-4 text-gray-500 font-mono">
-                        {t.payroll_no || "-"}
+                        {t.email || "-"}
                       </td>
                       <td className="py-3 px-4 font-medium text-gray-700">
                         {t.assigned}

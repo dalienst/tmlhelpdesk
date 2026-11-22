@@ -2,101 +2,88 @@
 
 import { useState, useMemo } from "react";
 import { useCreateTicket } from "@/hooks/tickets/actions";
-import { useFetchDepartments } from "@/hooks/departments/actions";
+import type { createTicket as CreateTicketPayload } from "@/services/tickets";
 import { useFetchCategories } from "@/hooks/categories/actions";
 import { useFetchIssues } from "@/hooks/issues/actions";
+import { useFetchEmployees } from "@/hooks/accounts/actions";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
-import { Loader2, ShieldCheck, Clock, UserCheck } from "lucide-react";
+import { Clock, ShieldCheck } from "lucide-react";
 
 interface CreateTicketProps {
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
+// Unit and department come from the requester's profile; the subject
+// defaults to the issue name and the priority to the issue's default.
 const validationSchema = Yup.object({
-  department: Yup.string().required("Department is required"),
-  category: Yup.string().required("Category is required"),
-  issue: Yup.string().required("Issue / Request type is required"),
-  subject: Yup.string().required("Subject is required"),
-  description: Yup.string().required("Detailed description is required"),
-  priority: Yup.string().required("Priority is required"),
+  category: Yup.string().required("Choose a service"),
+  issue: Yup.string().required("Choose the issue"),
+  description: Yup.string().required("Describe the problem"),
 });
+
+const selectClass =
+  "w-full px-3 py-2 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600 bg-white disabled:bg-gray-50 disabled:text-gray-400";
 
 export default function CreateTicket({ onSuccess, onCancel }: CreateTicketProps) {
   const { mutateAsync: createTicket } = useCreateTicket();
-  const { data: departments, isLoading: deptsLoading } = useFetchDepartments();
   const { data: categories, isLoading: catsLoading } = useFetchCategories();
   const { data: issues, isLoading: issuesLoading } = useFetchIssues();
+  const { data: employees } = useFetchEmployees();
 
-  const [selectedDept, setSelectedDept] = useState("");
   const [selectedCat, setSelectedCat] = useState("");
   const [selectedIssueRef, setSelectedIssueRef] = useState("");
+  const [requesterEmail, setRequesterEmail] = useState("");
 
-  // Filter categories by selected department
-  const filteredCategories = useMemo(() => {
-    if (!selectedDept || !categories) return [];
-    return categories.filter(
-      (c) =>
-        c.is_active &&
-        (c.department_name?.toLowerCase() === selectedDept.toLowerCase() ||
-          c.department?.toLowerCase() === selectedDept.toLowerCase())
-    );
-  }, [selectedDept, categories]);
-
-  // Filter issues by selected category
-  const filteredIssues = useMemo(() => {
-    if (!selectedCat || !issues) return [];
-    return issues.filter(
-      (i) =>
-        i.is_active &&
-        (i.category_name?.toLowerCase() === selectedCat.toLowerCase() ||
-          i.category?.toLowerCase() === selectedCat.toLowerCase())
-    );
-  }, [selectedCat, issues]);
-
-  // Selected issue details for live dispatch preview
-  const currentIssue = useMemo(() => {
-    if (!selectedIssueRef || !issues) return null;
-    return issues.find((i) => i.name === selectedIssueRef || i.reference === selectedIssueRef);
-  }, [selectedIssueRef, issues]);
+  const activeCategories = useMemo(
+    () => (categories || []).filter((c) => c.is_active && c.group_reference),
+    [categories]
+  );
+  const filteredIssues = useMemo(
+    () => (issues || []).filter((i) => i.is_active && i.category_reference === selectedCat),
+    [selectedCat, issues]
+  );
+  const currentIssue = useMemo(
+    () => (issues || []).find((i) => i.reference === selectedIssueRef) || null,
+    [selectedIssueRef, issues]
+  );
+  const requester = useMemo(
+    () => (employees || []).find((e) => e.email === requesterEmail) || null,
+    [requesterEmail, employees]
+  );
 
   return (
     <div className="w-full">
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Raise a Request / Ticket</h2>
         <p className="text-xs text-gray-500 mt-0.5">
-          Select the department and service. The ticket will be automatically dispatched to the technician in charge.
+          Pick the service and issue. The ticket goes to the requester&apos;s unit team and the least-busy
+          technician there.
         </p>
       </div>
 
       <Formik
-        initialValues={{
-          department: "",
-          category: "",
-          issue: "",
-          subject: "",
-          description: "",
-          priority: "MEDIUM" as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",
-        }}
+        initialValues={{ requester: "", category: "", issue: "", subject: "", description: "" }}
         validationSchema={validationSchema}
         onSubmit={async (values, { setSubmitting, resetForm }) => {
           try {
-            const payload = {
-              department: values.department,
-              category: values.category,
+            const payload: Record<string, string> = {
               issue: values.issue,
-              subject: values.subject,
               description: values.description,
-              priority: values.priority,
             };
-            await createTicket(payload);
-            toast.success("Ticket submitted successfully! Assigned to technician.");
+            if (values.subject.trim()) payload.subject = values.subject.trim();
+            if (values.requester) payload.requester = values.requester;
+            await createTicket(payload as unknown as CreateTicketPayload);
+            toast.success("Ticket submitted and assigned.");
             resetForm();
+            setSelectedCat("");
+            setSelectedIssueRef("");
+            setRequesterEmail("");
             onSuccess?.();
           } catch (err: unknown) {
-            const error = err as { response?: { data?: Record<string, string[]> } };
+            const error = err as { response?: { data?: Record<string, string[] | string> } };
             if (error.response?.data) {
               const messages = Object.entries(error.response.data)
                 .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(", ") : msgs}`)
@@ -110,105 +97,83 @@ export default function CreateTicket({ onSuccess, onCancel }: CreateTicketProps)
           }
         }}
       >
-        {({ isSubmitting, setFieldValue, values }) => (
+        {({ isSubmitting, setFieldValue }) => (
           <Form className="space-y-4">
-            {/* Step 1: Department */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">
-                1. Target Department <span className="text-red-500">*</span>
+                Raise for <span className="text-gray-400 font-normal">(leave empty for yourself)</span>
               </label>
-              {deptsLoading ? (
-                <div className="flex items-center gap-2 py-2 text-xs text-gray-400">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Loading departments...
-                </div>
-              ) : (
-                <Field
-                  as="select"
-                  name="department"
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                    const dept = e.target.value;
-                    setFieldValue("department", dept);
-                    setSelectedDept(dept);
-                    setFieldValue("category", "");
-                    setSelectedCat("");
-                    setFieldValue("issue", "");
-                    setSelectedIssueRef("");
-                  }}
-                  className="w-full px-3 py-2 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600 bg-white"
-                >
-                  <option value="">Select Department (e.g. Finance, IT, HR)</option>
-                  {departments
-                    ?.filter((d) => d.is_active)
-                    .map((dept) => (
-                      <option key={dept.id} value={dept.name}>
-                        {dept.name} ({dept.unit})
-                      </option>
-                    ))}
-                </Field>
+              <Field
+                as="select"
+                name="requester"
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  setFieldValue("requester", e.target.value);
+                  setRequesterEmail(e.target.value);
+                }}
+                className={selectClass}
+              >
+                <option value="">Myself</option>
+                {(employees || [])
+                  .filter((e) => e.is_active)
+                  .map((e) => (
+                    <option key={e.id} value={e.email}>
+                      {e.first_name} {e.last_name}
+                      {e.department_name ? ` (${e.department_name}${e.unit_name ? `, ${e.unit_name}` : ""})` : ""}
+                    </option>
+                  ))}
+              </Field>
+              {requester && !requester.unit && (
+                <p className="text-amber-600 text-[11px] mt-1">
+                  This person has no unit set, so the request cannot be routed. Set it under Staff &amp; Users first.
+                </p>
               )}
-              <ErrorMessage name="department" component="p" className="text-red-500 text-[11px] mt-0.5" />
             </div>
 
-            {/* Step 2: Category (Cascading) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  2. Service Category <span className="text-red-500">*</span>
+                  1. Service <span className="text-red-500">*</span>
                 </label>
                 <Field
                   as="select"
                   name="category"
-                  disabled={!selectedDept || catsLoading}
+                  disabled={catsLoading}
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                    const cat = e.target.value;
-                    setFieldValue("category", cat);
-                    setSelectedCat(cat);
+                    setFieldValue("category", e.target.value);
+                    setSelectedCat(e.target.value);
                     setFieldValue("issue", "");
                     setSelectedIssueRef("");
                   }}
-                  className="w-full px-3 py-2 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600 bg-white disabled:bg-gray-50 disabled:text-gray-400"
+                  className={selectClass}
                 >
-                  <option value="">
-                    {!selectedDept ? "Select a department first" : "Select Category (e.g. Payroll)"}
-                  </option>
-                  {filteredCategories.map((cat) => (
-                    <option key={cat.id} value={cat.name}>
-                      {cat.name}
+                  <option value="">{catsLoading ? "Loading..." : "Select a service"}</option>
+                  {activeCategories.map((c) => (
+                    <option key={c.id} value={c.reference}>
+                      {c.name}
                     </option>
                   ))}
                 </Field>
                 <ErrorMessage name="category" component="p" className="text-red-500 text-[11px] mt-0.5" />
               </div>
 
-              {/* Step 3: Issue (Cascading) */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  3. Specific Issue / Request <span className="text-red-500">*</span>
+                  2. Issue <span className="text-red-500">*</span>
                 </label>
                 <Field
                   as="select"
                   name="issue"
                   disabled={!selectedCat || issuesLoading}
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                    const issueName = e.target.value;
-                    setFieldValue("issue", issueName);
-                    setSelectedIssueRef(issueName);
-                    const matching = issues?.find((i) => i.name === issueName);
-                    if (matching) {
-                      setFieldValue("priority", matching.default_priority || "MEDIUM");
-                      if (!values.subject) {
-                        setFieldValue("subject", matching.name);
-                      }
-                    }
+                    setFieldValue("issue", e.target.value);
+                    setSelectedIssueRef(e.target.value);
                   }}
-                  className="w-full px-3 py-2 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600 bg-white disabled:bg-gray-50 disabled:text-gray-400"
+                  className={selectClass}
                 >
-                  <option value="">
-                    {!selectedCat ? "Select a category first" : "Select Request (e.g. P9 Form Request)"}
-                  </option>
-                  {filteredIssues.map((iss) => (
-                    <option key={iss.id} value={iss.name}>
-                      {iss.name}
+                  <option value="">{!selectedCat ? "Select a service first" : "Select the issue"}</option>
+                  {filteredIssues.map((i) => (
+                    <option key={i.id} value={i.reference}>
+                      {i.name}
                     </option>
                   ))}
                 </Field>
@@ -216,111 +181,62 @@ export default function CreateTicket({ onSuccess, onCancel }: CreateTicketProps)
               </div>
             </div>
 
-            {/* Intelligent Dispatch Preview Card */}
             {currentIssue && (
-              <div className="bg-red-50/50 border border-red-100 rounded p-3 text-xs space-y-1.5">
-                <div className="flex items-center gap-1.5 text-red-800 font-semibold">
-                  <ShieldCheck className="h-4 w-4 text-red-600" />
-                  <span>Automatic Technician Routing</span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-gray-700 pt-1">
-                  <div className="flex items-center gap-1.5">
-                    <UserCheck className="h-3.5 w-3.5 text-gray-400" />
-                    <span>
-                      In charge:{" "}
-                      <strong className="text-gray-900">
-                        {currentIssue.technician_name || "Department Supervisor"}
-                      </strong>
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-gray-400" />
-                    <span>
-                      SLA: <strong className="text-gray-900">{currentIssue.sla_hours} hrs</strong>
-                    </span>
-                  </div>
-                  <div>
-                    Priority: <strong className="text-gray-900">{currentIssue.default_priority}</strong>
-                  </div>
-                </div>
-                {currentIssue.description && (
-                  <p className="text-[11px] text-gray-500 pt-1 border-t border-red-100/60">
-                    {currentIssue.description}
-                  </p>
-                )}
+              <div className="flex flex-wrap gap-3 text-[11px] text-gray-600 bg-gray-50 border border-gray-100 rounded p-2.5">
+                <span className="inline-flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  {currentIssue.group_name || "Service team"}
+                  {requester?.unit_name ? `, ${requester.unit_name}` : ""}
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-blue-500" /> {currentIssue.sla_hours}h SLA &middot;{" "}
+                  {currentIssue.default_priority}
+                </span>
               </div>
             )}
 
-            {/* Subject and Priority */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Subject / Summary <span className="text-red-500">*</span>
-                </label>
-                <Field
-                  type="text"
-                  name="subject"
-                  placeholder="e.g., P9 Form Request for Tax Year 2025"
-                  className="w-full px-3 py-2 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600"
-                />
-                <ErrorMessage name="subject" component="p" className="text-red-500 text-[11px] mt-0.5" />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Priority
-                </label>
-                <Field
-                  as="select"
-                  name="priority"
-                  className="w-full px-3 py-2 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600 bg-white"
-                >
-                  <option value="LOW">Low</option>
-                  <option value="MEDIUM">Medium</option>
-                  <option value="HIGH">High</option>
-                  <option value="CRITICAL">Critical</option>
-                </Field>
-              </div>
-            </div>
-
-            {/* Description */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Detailed Information / Notes <span className="text-red-500">*</span>
+                3. Describe the problem <span className="text-red-500">*</span>
               </label>
               <Field
                 as="textarea"
-                rows={3}
                 name="description"
-                placeholder="Provide all relevant details (e.g., Year, KRA PIN, staff number, room/location, or specific requirement)..."
-                className="w-full px-3 py-2 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600"
+                rows={4}
+                placeholder="Where is it, what happened, and anything the technician should know"
+                className="w-full px-3 py-2 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600 resize-none"
               />
               <ErrorMessage name="description" component="p" className="text-red-500 text-[11px] mt-0.5" />
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">
+                Short title <span className="text-gray-400 font-normal">(optional, defaults to the issue name)</span>
+              </label>
+              <Field
+                type="text"
+                name="subject"
+                className="w-full px-3 py-2 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-600 focus:border-red-600"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
               {onCancel && (
                 <button
                   type="button"
                   onClick={onCancel}
-                  className="px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100 rounded transition font-medium"
+                  disabled={isSubmitting}
+                  className="px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-100 rounded transition"
                 >
                   Cancel
                 </button>
               )}
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-red-600 text-white rounded hover:bg-red-700 transition text-xs font-medium disabled:opacity-50 shadow-sm"
+                disabled={isSubmitting || (!!requester && !requester.unit)}
+                className="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-semibold transition disabled:opacity-50"
               >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" /> Submitting...
-                  </>
-                ) : (
-                  "Submit Ticket"
-                )}
+                {isSubmitting ? "Submitting..." : "Submit Ticket"}
               </button>
             </div>
           </Form>

@@ -7,7 +7,7 @@ import { PaginatedResponse } from "./general";
 export interface User {
     id: string;
     email: string;
-    payroll_no: string;
+    payroll_no?: string | null; // admins only
     first_name: string;
     last_name: string;
     is_staff: boolean;
@@ -28,6 +28,10 @@ export interface User {
     managed_unit?: string | number | null;
     managed_unit_name?: string | null;
     managed_unit_code?: string | null;
+    unit?: string | null; // unit reference
+    unit_name?: string | null;
+    department?: string | null; // department reference
+    department_name?: string | null;
     created_at: string;
     updated_at: string;
     deleted_at: string;
@@ -62,7 +66,9 @@ export interface CreateEmployeeByAdminPayload {
     email: string;
     first_name: string;
     last_name: string;
-    payroll_no: string;
+    payroll_no?: string | null;
+    unit?: string | null;
+    department?: string | null;
     is_employee?: boolean;
     is_manager?: boolean;
     is_trainer?: boolean;
@@ -98,6 +104,8 @@ export interface UpdateUserByAdminPayload {
     is_general_manager?: boolean;
     is_group_manager?: boolean;
     managed_unit?: string | number | null;
+    unit?: string | null;
+    department?: string | null;
 }
 
 export interface resetMemberPassword {

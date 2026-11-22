@@ -121,13 +121,13 @@ export default function AdminDashboard() {
   const filteredIssues = issues?.filter((iss) => {
     const term = searchTerm.toLowerCase();
     const matchesDept = selectedDeptFilter
-      ? iss.department_name?.toLowerCase() === selectedDeptFilter.toLowerCase()
+      ? iss.group_name?.toLowerCase() === selectedDeptFilter.toLowerCase()
       : true;
     const matchesSearch =
       iss.name?.toLowerCase().includes(term) ||
       iss.code?.toLowerCase().includes(term) ||
       iss.category_name?.toLowerCase().includes(term) ||
-      iss.department_name?.toLowerCase().includes(term) ||
+      iss.group_name?.toLowerCase().includes(term) ||
       iss.technician_name?.toLowerCase().includes(term);
     return matchesDept && matchesSearch;
   });
@@ -466,10 +466,10 @@ export default function AdminDashboard() {
                 onChange={(e) => setSelectedDeptFilter(e.target.value)}
                 className="bg-white border border-gray-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 rounded px-2.5 py-1.5 text-xs outline-none text-gray-700 font-medium"
               >
-                <option value="">All Departments</option>
-                {departments?.map((dept) => (
-                  <option key={dept.id} value={dept.name}>
-                    {dept.name}
+                <option value="">All Groups</option>
+                {Array.from(new Set((issues || []).map((i) => i.group_name).filter(Boolean))).map((name) => (
+                  <option key={name as string} value={name as string}>
+                    {name}
                   </option>
                 ))}
               </select>
@@ -529,7 +529,7 @@ export default function AdminDashboard() {
                 <ListTree className="w-8 h-8 mx-auto mb-2 text-gray-300" />
                 <p className="text-xs font-semibold text-gray-700">No service issues configured</p>
                 <p className="text-[11px] text-gray-400 mt-0.5 mb-3">
-                  Define requests like P9 Forms, Laptop repairs, or POS issues and assign technicians.
+                  Define requests like P9 Forms, Laptop repairs, or POS issues.
                 </p>
                 <button
                   onClick={() => setModalType("issue")}
@@ -544,8 +544,8 @@ export default function AdminDashboard() {
                   <tr className="bg-gray-50/50 border-b border-gray-100 text-gray-500 font-semibold">
                     <th className="px-4 py-2.5">Specific Request / Issue</th>
                     <th className="px-4 py-2.5">Service Category</th>
-                    <th className="px-4 py-2.5">Department</th>
-                    <th className="px-4 py-2.5">Technician / Officer In Charge</th>
+                    <th className="px-4 py-2.5">Functional Group</th>
+                    <th className="px-4 py-2.5">Assigned To</th>
                     <th className="px-4 py-2.5">SLA Turnaround</th>
                     <th className="px-4 py-2.5">Default Priority</th>
                     <th className="px-4 py-2.5 text-right">Settings</th>
@@ -562,19 +562,12 @@ export default function AdminDashboard() {
                         {iss.category_name}
                       </td>
                       <td className="px-4 py-2.5 text-gray-700">
-                        {iss.department_name}
+                        {iss.group_name || <span className="text-amber-600 italic">No group</span>}
                       </td>
                       <td className="px-4 py-2.5">
-                        {iss.technician_name ? (
-                          <div className="flex items-center gap-1 text-gray-900 font-semibold">
-                            <UserCheck className="w-3.5 h-3.5 text-red-600 shrink-0" />
-                            <span>{iss.technician_name}</span>
-                          </div>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 text-[11px] text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
-                            Department HOD Fallback
-                          </span>
-                        )}
+                        <span className="text-[11px] text-gray-600">
+                          Least-busy technician in the requester&apos;s unit
+                        </span>
                       </td>
                       <td className="px-4 py-2.5 text-gray-600">
                         <span className="inline-flex items-center gap-1">
@@ -670,8 +663,8 @@ export default function AdminDashboard() {
                       </td>
                       <td className="px-4 py-2.5 text-gray-700">
                         <p className="font-medium text-gray-900">{ticket.requester_name || ticket.requester}</p>
-                        {ticket.requester_payroll_no && (
-                          <p className="text-[10px] text-gray-400">Payroll: {ticket.requester_payroll_no}</p>
+                        {ticket.requester_department_name && (
+                          <p className="text-[10px] text-gray-400">{ticket.requester_department_name}</p>
                         )}
                       </td>
                       <td className="px-4 py-2.5 text-gray-600">

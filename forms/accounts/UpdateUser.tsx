@@ -2,6 +2,7 @@
 
 import { updateUserByAdmin, User } from "@/services/accounts";
 import { useFetchUnits } from "@/hooks/units/actions";
+import WorkplaceFields from "@/components/forms/WorkplaceFields";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -43,6 +44,8 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
     is_general_manager: !!user.is_general_manager,
     is_director: !!user.is_director,
     managed_unit: (user.managed_unit as string) || "",
+    unit: user.unit || "",
+    department: user.department || "",
   };
 
   return (
@@ -60,7 +63,7 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
         </div>
         <div>
           <p className="text-sm font-semibold text-gray-900">{user.first_name} {user.last_name}</p>
-          <p className="text-xs text-gray-500">{user.email} &bull; Payroll: <span className="font-mono">{user.payroll_no || "N/A"}</span></p>
+          <p className="text-xs text-gray-500">{user.email} &bull; Payroll: <span className="font-mono">{user.payroll_no || "N/A"}</span>{user.department_name ? ` \u2022 ${user.department_name}${user.unit_name ? `, ${user.unit_name}` : ""}` : ""}</p>
         </div>
       </div>
 
@@ -79,6 +82,9 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
             if (Boolean(values.is_group_manager) !== initialValues.is_group_manager) payload.is_group_manager = Boolean(values.is_group_manager);
             if (Boolean(values.is_general_manager) !== initialValues.is_general_manager) payload.is_general_manager = Boolean(values.is_general_manager);
             if (Boolean(values.is_director) !== initialValues.is_director) payload.is_director = Boolean(values.is_director);
+
+            if ((values.unit || "") !== initialValues.unit) payload.unit = values.unit || null;
+            if ((values.department || "") !== initialValues.department) payload.department = values.department || null;
 
             // Handle managed unit logic
             const resolvedUnit = values.is_general_manager && values.managed_unit ? values.managed_unit : null;
@@ -107,6 +113,12 @@ export default function UpdateUser({ user, onSuccess, onCancel }: UpdateUserProp
       >
         {({ isSubmitting, values }) => (
           <Form className="space-y-4">
+            {/* Where they work */}
+            <div>
+              <h3 className="text-xs font-semibold text-gray-900 mb-2 border-b border-gray-100 pb-1.5">Unit &amp; Department</h3>
+              <WorkplaceFields />
+            </div>
+
             {/* Account Status */}
             <div>
               <h3 className="text-xs font-semibold text-gray-900 mb-2 border-b border-gray-100 pb-1.5">Account Status</h3>

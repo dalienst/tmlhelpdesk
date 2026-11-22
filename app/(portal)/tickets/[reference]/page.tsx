@@ -94,10 +94,30 @@ export default function TicketWorkspacePage() {
 
   const rolePrefix = primaryRole(session?.user);
 
+  // Nobody works a ticket they raised themselves, admins included.
+  // The requester can only cancel it while it is still open.
+  const isOwnTicket = Boolean(
+    ticket?.requester_email &&
+      session?.user?.email &&
+      ticket.requester_email.toLowerCase() === session.user.email.toLowerCase()
+  );
+
   // Check if current user can manage lifecycle
-  const canManage = isAdmin || isLeadership || isManager || isTechnician;
+  const canManage = (isAdmin || isLeadership || isManager || isTechnician) && !isOwnTicket;
   // Check if current user can reassign
-  const canReassign = isAdmin || isLeadership || isManager;
+  const canReassign = (isAdmin || isLeadership || isManager) && !isOwnTicket;
+
+  const handleCancelOwnTicket = async () => {
+    if (!ticket) return;
+    try {
+      await updateTicketMutation({ reference: ticket.reference, data: { status: "CANCELLED" } });
+      await refetch();
+      toast.success("Your request has been cancelled.");
+    } catch (err: unknown) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      toast.error(detail || "Could not cancel the request.");
+    }
+  };
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "-";
@@ -318,7 +338,9 @@ export default function TicketWorkspacePage() {
 
   // Staff members for assignment
   const assignableStaff = staffMembers?.filter(
-    (u) => u.is_technician || u.is_manager || u.is_admin || u.is_staff
+    (u) =>
+      (u.is_technician || u.is_manager || u.is_admin || u.is_staff) &&
+      u.email?.toLowerCase() !== ticket?.requester_email?.toLowerCase()
   );
 
   if (isLoading) {
@@ -486,9 +508,9 @@ export default function TicketWorkspacePage() {
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                {ticket.requester_payroll_no && (
-                  <span className="font-mono text-xs font-semibold px-2 py-1 bg-white border border-blue-200 rounded text-gray-700">
-                    Payroll ID: {ticket.requester_payroll_no}
+                {ticket.requester_department_name && (
+                  <span className="text-xs font-medium px-2 py-1 bg-white border border-blue-200 rounded text-gray-700">
+                    {ticket.requester_department_name}
                   </span>
                 )}
                 {ticket.unit_name && (
@@ -824,6 +846,21 @@ export default function TicketWorkspacePage() {
                   <div className="mt-1">{getPriorityBadge(ticket.priority)}</div>
                 </div>
               </div>
+              {isOwnTicket && (
+                <p className="text-[11px] text-gray-500">
+                  You raised this request, so it is handled by the assigned team. You can cancel it while it is still
+                  open.
+                </p>
+              )}
+              {isOwnTicket && ticket.status === "OPEN" && (
+                <button
+                  type="button"
+                  onClick={handleCancelOwnTicket}
+                  className="w-full px-3 py-1.5 text-xs font-semibold text-gray-700 border border-gray-200 rounded hover:bg-gray-50 transition"
+                >
+                  Cancel my request
+                </button>
+              )}
             </div>
           )}
 

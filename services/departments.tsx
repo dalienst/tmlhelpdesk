@@ -15,6 +15,7 @@ export interface Department {
   name: string;
   code: string;
   description: string;
+  email?: string | null;
   supervisor: string | null;
   staff: string[];
   is_active: boolean;
@@ -31,6 +32,7 @@ export interface createDepartment {
   name: string;
   code: string;
   description?: string;
+  email?: string | null;
   supervisor?: string | null;
   staff?: string[];
 }
@@ -43,6 +45,7 @@ export interface updateDepartment {
   description?: string;
   supervisor?: string | null;
   staff?: string[];
+  email?: string | null;
   is_active?: boolean;
 }
 

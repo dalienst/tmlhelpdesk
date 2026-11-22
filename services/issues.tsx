@@ -9,8 +9,8 @@ export interface Issue {
   category: string;
   category_name: string;
   category_reference: string;
-  department_name: string;
-  department_reference: string;
+  group_name?: string | null;
+  group_reference?: string | null;
   name: string;
   code: string;
   description?: string;
@@ -53,7 +53,7 @@ export interface updateIssue {
 
 export interface IssueQueryParams {
   category?: string;
-  department?: string;
+  group?: string;
   technician?: string;
   my_issues?: boolean;
 }
@@ -64,7 +64,7 @@ export const getIssues = async (
 ): Promise<Issue[]> => {
   const query = new URLSearchParams();
   if (params?.category) query.append("category", params.category);
-  if (params?.department) query.append("department", params.department);
+  if (params?.group) query.append("group", params.group);
   if (params?.technician) query.append("technician", params.technician);
   if (params?.my_issues) query.append("my_issues", "true");
 
